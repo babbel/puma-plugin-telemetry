@@ -55,9 +55,9 @@ DEPENDENCIES
   puma-plugin-telemetry!
   rake (~> 12.0)
   rspec (~> 3.0)
-  rubocop
-  rubocop-performance
-  rubocop-rspec
+  rubocop (~> 1.5)
+  rubocop-performance (~> 1.9)
+  rubocop-rspec (~> 2.0)
 
 BUNDLED WITH
    2.1.4
