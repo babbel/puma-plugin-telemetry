@@ -1,0 +1,49 @@
+name: build
+
+on: push
+
+jobs:
+  build_matrix:
+    strategy:
+      matrix:
+        os: ['ubuntu-18.04', 'ubuntu-20.04']
+        ruby: ['2.6', '2.7', '3.0.0-preview2']
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      # Environment setup
+      - uses: actions/checkout@v2
+
+      - uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-$(lsb_release -rs)-gems-${{ hashFiles('**/Gemfile.lock')}}-${{ matrix.ruby }}
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: Install dependencies
+        run: |
+          gem install bundler
+
+          bundle config path vendor/bundle
+
+          bundle install
+
+      - name: Run rubocop
+        run: |
+          bundle exec rubocop --display-cop-names
+
+      - name: Run tests
+        run: |
+          bundle exec rspec
+
+  build:
+    needs: [build_matrix]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dummy for branch status checks
+        run: |
+          echo "build complete"
