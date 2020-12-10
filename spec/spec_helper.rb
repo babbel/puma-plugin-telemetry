@@ -3,6 +3,8 @@
 require "bundler/setup"
 require "puma/plugin/telemetry"
 
+require_relative "support/server"
+
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
   config.example_status_persistence_file_path = ".rspec_status"
