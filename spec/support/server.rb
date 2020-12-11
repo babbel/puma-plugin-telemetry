@@ -42,6 +42,8 @@ class Server
   end
 
   def stop_server
+    return if @pid.nil?
+
     begin
       Process.kill :TERM, @pid
     rescue Errno::ESRCH # rubocop:disable Lint/SuppressedException

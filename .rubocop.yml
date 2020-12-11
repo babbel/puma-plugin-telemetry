@@ -1,3 +1,7 @@
+require:
+  - rubocop-performance
+  - rubocop-rspec
+
 AllCops:
   TargetRubyVersion: 2.6
   NewCops: enable
@@ -7,3 +11,7 @@ Style/StringLiterals:
 
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*

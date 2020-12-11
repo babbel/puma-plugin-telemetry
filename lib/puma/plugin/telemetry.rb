@@ -38,17 +38,17 @@ end
 Puma::Plugin.create do
   def start(launcher)
     unless Puma::Plugin::Telemetry.config.enabled?
-      launcher.events.info "plugin=telemetry msg=\"disabled, exiting...\""
+      launcher.events.log "plugin=telemetry msg=\"disabled, exiting...\""
       return
     end
 
     @launcher = launcher
-    @launcher.events.info "plugin=telemetry msg=\"enabled, setting up runner...\""
+    @launcher.events.log "plugin=telemetry msg=\"enabled, setting up runner...\""
 
-    in_background(&method(:runner))
+    in_background { run! }
   end
 
-  def runner
+  def run!
     loop do
       @launcher.events.debug "plugin=telemetry msg=\"publish\""
 

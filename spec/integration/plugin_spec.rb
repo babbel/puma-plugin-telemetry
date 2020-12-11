@@ -4,41 +4,49 @@ require "timeout"
 
 TestTakesTooLongError = Class.new(StandardError)
 
-RSpec.describe "Plugin integration test" do # rubocop:disable Metrics/BlockLength
-  around do |example|
-    @server = nil
+module Puma
+  class Plugin
+    RSpec.describe Telemetry do
+      around do |example|
+        @server = nil
 
-    Timeout.timeout(10, TestTakesTooLongError) do
-      example.run
-    end
-  ensure
-    @server&.stop
-  end
+        Timeout.timeout(10, TestTakesTooLongError) do
+          example.run
+        end
+      ensure
+        @server&.stop
+      end
 
-  before do
-    @server = Server.new(config)
-    @server.start
-  end
+      before do
+        @server = ::Server.new(config)
+        @server.start
+      end
 
-  context "when defaults" do
-    let(:config) { "default" }
+      context "when defaults" do
+        let(:config) { "default" }
 
-    it "doesn't run telemetry" do
-      expect(@server.lines).to include(/telemetry: disabled, exiting\.\.\./)
-    end
-  end
+        it "doesn't run telemetry" do
+          expect(@server.lines).to include(/plugin=telemetry msg="disabled, exiting\.\.\."/)
+        end
+      end
 
-  describe "with targets" do
-    let(:config) { "config" }
+      describe "with targets" do
+        let(:config) { "config" }
 
-    it "runs the targets" do
-      expect(@server.lines).to include(/telemetry: enabled, setting up runner\.\.\./)
+        it "runs telemetry" do
+          expect(@server.lines).to include(/plugin=telemetry msg="enabled, setting up runner\.\.\."/)
+        end
 
-      true while (line = @server.next_line) !~ /target=01/
-      expect(line).to start_with "target=01 telemetry={}"
+        it "executes the first target" do
+          true while (line = @server.next_line) !~ /target=01/
+          expect(line).to start_with "target=01 telemetry={}"
+        end
 
-      true while (line = @server.next_line) !~ /target=02/
-      expect(line).to start_with "target=02 telemetry={}"
+        it "executes the second target" do
+          true while (line = @server.next_line) !~ /target=02/
+          expect(line).to start_with "target=02 telemetry={}"
+        end
+      end
     end
   end
 end
