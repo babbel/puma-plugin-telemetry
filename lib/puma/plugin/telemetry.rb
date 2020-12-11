@@ -38,25 +38,25 @@ end
 Puma::Plugin.create do
   def start(launcher)
     unless Puma::Plugin::Telemetry.config.enabled?
-      launcher.events.debug "telemetry: disabled, exiting..."
+      launcher.events.info "plugin=telemetry msg=\"disabled, exiting...\""
       return
     end
 
     @launcher = launcher
-    @launcher.events.debug "telemetry: enabled, setting up runner..."
+    @launcher.events.info "plugin=telemetry msg=\"enabled, setting up runner...\""
 
     in_background(&method(:runner))
   end
 
   def runner
     loop do
-      @launcher.events.debug "telemetry: publish"
+      @launcher.events.debug "plugin=telemetry msg=\"publish\""
 
       call(Puma::Plugin::Telemetry.build)
     rescue Errno::EPIPE
       # Occurs when trying to output to STDOUT while puma is shutting down
     rescue StandardError => e
-      @launcher.events.error "telemetry: failed with #{e.class}<#{e.message.inspect}>"
+      @launcher.events.error "plugin=telemetry err=#{e.class} msg=#{e.message.inspect}"
     ensure
       sleep Puma::Plugin::Telemetry.config.frequency
     end
