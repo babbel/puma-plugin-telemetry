@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Puma
-  module Plugin
+  class Plugin
     module Telemetry
       VERSION = "0.1.0"
     end
