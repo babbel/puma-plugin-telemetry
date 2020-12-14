@@ -5,6 +5,7 @@ require "puma/plugin"
 
 require "puma/plugin/telemetry/version"
 require "puma/plugin/telemetry/config"
+require "puma/plugin/telemetry/data"
 
 module Puma
   class Plugin
@@ -28,7 +29,22 @@ module Puma
         end
 
         def build
-          {}
+          puma_telemetry
+        end
+
+        private
+
+        def puma_telemetry
+          stats = ::Puma.stats_hash
+          File.write("foo.json", JSON.generate(stats))
+          data_class = if stats.key?(:workers)
+                         ClusteredData
+                       else
+                         WorkerData
+                       end
+          data_class
+            .new(stats)
+            .metrics(config.puma_telemetry)
         end
       end
     end
@@ -45,7 +61,10 @@ Puma::Plugin.create do
     @launcher = launcher
     @launcher.events.log "plugin=telemetry msg=\"enabled, setting up runner...\""
 
-    in_background { run! }
+    in_background do
+      sleep Puma::Plugin::Telemetry.config.initial_delay
+      run!
+    end
   end
 
   def run!

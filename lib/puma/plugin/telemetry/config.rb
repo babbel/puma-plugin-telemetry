@@ -4,26 +4,61 @@ module Puma
   class Plugin
     module Telemetry
       # Configuration object for plugin
-      #
-      # TBD
       class Config
+        DEFAULT_PUMA_TELEMETRY = [
+          # Total booted workers.
+          "workers.booted",
+
+          # Total number of workers configured.
+          "workers.total",
+
+          # Current number of threads spawned.
+          "workers.spawned_threads",
+
+          # Maximum number of threads that can run .
+          "workers.max_threads",
+
+          # Number of requests performed so far.
+          "workers.requests_count",
+
+          # Number of requests waiting to be processed.
+          "queue.backlog",
+
+          # Free capacity that could be utilized, i.e. if backlog
+          # is growing, and we still have capacity available, it
+          # could mean that load balancing is not performing well.
+          "queue.capacity"
+        ].freeze
+
         # Whenever telemetry should run with puma
         # - default: false
         attr_accessor :enabled
+
+        # Number of seconds to delay first telemetry
+        # - default: 5
+        attr_accessor :initial_delay
 
         # Seconds between publishing telemetry
         # - default: 5
         attr_accessor :frequency
 
         # List of targets which are meant to publish telemetry.
-        # Target should implement `#call` method accepting a single argument - so it can be even a simple proc.
+        # Target should implement `#call` method accepting
+        # a single argument - so it can be even a simple proc.
         # - default: []
         attr_accessor :targets
 
+        # Which metrics to publish from puma stats. You can select
+        # a subset from default ones that interest you the most.
+        # - default: DEFAULT_PUMA_TELEMETRY
+        attr_accessor :puma_telemetry
+
         def initialize
           @enabled = false
+          @initial_delay = 5
           @frequency = 5
           @targets = []
+          @puma_telemetry = DEFAULT_PUMA_TELEMETRY
         end
 
         def enabled?

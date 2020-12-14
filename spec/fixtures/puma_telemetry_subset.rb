@@ -1,0 +1,23 @@
+# frozen_string_literal: true
+
+app { |_env| [200, {}, ["embedded app"]] }
+lowlevel_error_handler { |_err| [200, {}, ["error page"]] }
+
+threads 1, 2
+workers 2
+plugin "telemetry"
+
+Puma::Plugin::Telemetry.configure do |config|
+  config.targets << ->(telemetry) { puts "telemetry=#{telemetry.inspect}" }
+  config.frequency = 0.2
+  config.enabled = true
+
+  # Delay first metric, so puma has time to bootup workers
+  config.initial_delay = 2
+
+  config.puma_telemetry = %w[
+    queue.backlog
+    workers.spawned_threads
+    workers.max_threads
+  ]
+end

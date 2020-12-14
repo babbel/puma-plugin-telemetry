@@ -17,4 +17,5 @@ Puma::Plugin::Telemetry.configure do |config|
   config.targets << Target.new("02")
   config.frequency = 0.2
   config.enabled = true
+  config.initial_delay = 0
 end
