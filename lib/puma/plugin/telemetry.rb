@@ -6,7 +6,8 @@ require "puma/plugin"
 require "puma/plugin/telemetry/version"
 require "puma/plugin/telemetry/config"
 require "puma/plugin/telemetry/data"
-require "puma/plugin/telemetry/target/datadog_statsd_target"
+require "puma/plugin/telemetry/targets/datadog_statsd_target"
+require "puma/plugin/telemetry/targets/io_target"
 
 module Puma
   class Plugin

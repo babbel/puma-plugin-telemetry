@@ -64,6 +64,20 @@ module Puma
         def enabled?
           !!@enabled
         end
+
+        def add_target(name_or_target, **args)
+          return @targets.push(name_or_target) unless name_or_target.is_a?(Symbol)
+
+          target =
+            case name_or_target
+            when :dogstatsd then Telemetry::Targets::DatadogStatsdTarget.new(**args)
+            when :io then Telemetry::Targets::IOTarget.new(**args)
+            else
+              raise Telemetry::Error, "Undefined Target: #{name_or_target.inspect}, #{args.inspect}"
+            end
+
+          @targets.push(target)
+        end
       end
     end
   end
