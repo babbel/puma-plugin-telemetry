@@ -14,8 +14,21 @@ module Puma
       end
 
       describe ".build" do
-        it "returns telemetry hash" do
-          expect(described_class.build).to eq({})
+        let(:default_telemetry) do
+          {
+            "workers.booted" => 1,
+            "workers.total" => 1,
+            "workers.max_threads" => 0,
+            "workers.requests_count" => 0,
+            "workers.spawned_threads" => 0,
+            "queue.backlog" => 0,
+            "queue.capacity" => 0
+          }
+        end
+
+        it "returns default telemetry hash" do
+          allow(::Puma).to receive(:stats_hash).and_return({})
+          expect(described_class.build).to eq(default_telemetry)
         end
       end
 
