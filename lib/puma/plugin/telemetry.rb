@@ -4,10 +4,10 @@ require "puma"
 require "puma/plugin"
 
 require "puma/plugin/telemetry/version"
-require "puma/plugin/telemetry/config"
 require "puma/plugin/telemetry/data"
 require "puma/plugin/telemetry/targets/datadog_statsd_target"
 require "puma/plugin/telemetry/targets/io_target"
+require "puma/plugin/telemetry/config"
 
 module Puma
   class Plugin

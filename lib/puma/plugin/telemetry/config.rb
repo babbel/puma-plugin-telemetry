@@ -30,6 +30,11 @@ module Puma
           "queue.capacity"
         ].freeze
 
+        TARGETS = {
+          dogstatsd: Telemetry::Targets::DatadogStatsdTarget,
+          io: Telemetry::Targets::IOTarget
+        }.freeze
+
         # Whenever telemetry should run with puma
         # - default: false
         attr_accessor :enabled
@@ -68,15 +73,11 @@ module Puma
         def add_target(name_or_target, **args)
           return @targets.push(name_or_target) unless name_or_target.is_a?(Symbol)
 
-          target =
-            case name_or_target
-            when :dogstatsd then Telemetry::Targets::DatadogStatsdTarget.new(**args)
-            when :io then Telemetry::Targets::IOTarget.new(**args)
-            else
-              raise Telemetry::Error, "Undefined Target: #{name_or_target.inspect}, #{args.inspect}"
-            end
+          target = TARGETS.fetch(name_or_target) do
+            raise Telemetry::Error, "Unknown Target: #{name_or_target.inspect}, #{args.inspect}"
+          end
 
-          @targets.push(target)
+          @targets.push(target.new(**args))
         end
       end
     end
