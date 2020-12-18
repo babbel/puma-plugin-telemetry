@@ -13,8 +13,8 @@ Target = Struct.new(:name) do
 end
 
 Puma::Plugin::Telemetry.configure do |config|
-  config.targets << Target.new("01")
-  config.targets << Target.new("02")
+  config.add_target Target.new("01")
+  config.add_target Target.new("02")
   config.frequency = 0.2
   config.enabled = true
   config.initial_delay = 0

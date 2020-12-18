@@ -3,7 +3,7 @@
 module Puma
   class Plugin
     module Telemetry
-      module Target
+      module Targets
         # Target wrapping Datadog Statsd client. You can configure
         # all details like _metrics prefix_ and _tags_ in the client
         # itself.
@@ -19,16 +19,13 @@ module Puma
         #                                    version: ENV["CODE_VERSION"]
         #                                  })
         #
-        #     DatadogStatsdTarget.new(client)
+        #     DatadogStatsdTarget.new(client: client)
         #
         class DatadogStatsdTarget
-          def initialize(client)
+          def initialize(client:)
             @client = client
           end
 
-          # TODO: Support other metric types, like `counter` backed into
-          #       telemetry. Best example that would use this is `request_count`
-          #
           def call(telemetry)
             client.batch do |statsd|
               telemetry.each do |metric, value|

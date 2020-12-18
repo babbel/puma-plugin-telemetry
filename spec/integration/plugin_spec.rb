@@ -62,16 +62,12 @@ module Puma
       context "when subset of telemetry" do
         let(:config) { "puma_telemetry_subset" }
         let(:expected_telemetry) do
-          {
-            "queue.backlog" => 0,
-            "workers.spawned_threads" => 2,
-            "workers.max_threads" => 4
-          }
+          "{\"queue.backlog\":0,\"workers.spawned_threads\":2,\"workers.max_threads\":4,\"name\":\"Puma::Plugin::Telemetry\",\"message\":\"Publish telemetry\"}\n" # rubocop:disable Layout/LineLength
         end
 
         it "logs only selected telemetry" do
-          true while (line = @server.next_line) !~ /telemetry=/
-          expect(line).to start_with "telemetry=#{expected_telemetry.inspect}"
+          true while (line = @server.next_line) !~ /Puma::Plugin::Telemetry/
+          expect(line).to start_with expected_telemetry
         end
       end
     end

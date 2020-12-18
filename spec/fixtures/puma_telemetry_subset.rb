@@ -8,7 +8,7 @@ workers 2
 plugin "telemetry"
 
 Puma::Plugin::Telemetry.configure do |config|
-  config.targets << ->(telemetry) { puts "telemetry=#{telemetry.inspect}" }
+  config.add_target :io, formatter: :json
   config.frequency = 0.2
   config.enabled = true
 
