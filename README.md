@@ -82,7 +82,21 @@ Just be mindful that if the API takes long to call, it will slow down frequency 
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run `bundle exec rake install`.
+
+## Release
+
+All gem releases are manual, in order to create a new release follow:
+
+1. Create new PR (this could be included in feature PR, if it's meant to be released)
+   - update `VERSION`, we use [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
+   - update `CHANGELOG`
+   - merge
+2. Draft new release via Github Releases
+   - use `v#{VERSION}` as a tag, i.e. `v0.1.0`
+   - add release notes based on the Changelog
+   - create
+3. Gem will get automatically published to given rubygems server
 
 ## Contributing
 

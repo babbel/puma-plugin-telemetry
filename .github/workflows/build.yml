@@ -1,6 +1,6 @@
 name: build
 
-on: push
+on: [push, create]
 
 jobs:
   build_matrix:
@@ -47,3 +47,25 @@ jobs:
       - name: Dummy for branch status checks
         run: |
           echo "build complete"
+
+  release:
+    needs: build
+    if: contains(github.ref, 'tags') && github.event_name == 'create'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+      - name: Prepare Gemfury
+        run: |
+          mkdir -p ~/.gem
+          echo -e "---\n:fury_push_token: ${{ secrets.GEMFURY_TOKEN }}" > ~/.gem/credentials
+          chmod 0600 ~/.gem/credentials
+
+      - name: Build Gem
+        run: |
+          gem build *.gemspec
+
+      - name: Publish Gem
+        run: |
+          gem push *.gem --key fury_push_token \
+                         --host https://push.fury.io/babbel
