@@ -27,7 +27,7 @@ module Puma
           end
 
           def call(telemetry)
-            client.batch do |statsd|
+            @client.batch do |statsd|
               telemetry.each do |metric, value|
                 statsd.gauge(metric, value)
               end

@@ -70,6 +70,29 @@ module Puma
           expect(line).to start_with expected_telemetry
         end
       end
+
+      context "when dogstatsd target" do
+        let(:config) { "dogstatsd" }
+        let(:expected_telemetry) do
+          %w[
+            workers.booted:1|g
+            workers.total:1|g
+            workers.spawned_threads:1|g
+            workers.max_threads:1|g
+            workers.requests_count:0|g
+            queue.backlog:0|g
+            queue.capacity:1|g
+          ]
+        end
+
+        it "doesn't crash" do
+          true while (line = @server.next_line) !~ /DEBUG -- : Statsd/
+
+          lines = ([line.slice(/workers.*/)] + Array.new(6) { @server.next_line.strip })
+
+          expect(lines).to eq(expected_telemetry)
+        end
+      end
     end
   end
 end
