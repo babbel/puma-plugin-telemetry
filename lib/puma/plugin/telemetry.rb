@@ -38,7 +38,6 @@ module Puma
 
         def puma_telemetry
           stats = ::Puma.stats_hash
-          File.write("foo.json", JSON.generate(stats))
           data_class = if stats.key?(:workers)
                          ClusteredData
                        else

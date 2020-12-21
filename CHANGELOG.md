@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2020-12-21
+### Fixed
+- Removed debugging information
+
 ## [0.1.0] - 2020-12-18
 ### Added
 - Core Plugin
