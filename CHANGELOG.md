@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2020-12-21
+### Added
+- Datadog Target integration tests
+
+### Fixed
+- Datadog Target
+
 ## [0.2.0] - 2020-12-21
 ### Fixed
 - Removed debugging information
