@@ -12,6 +12,8 @@ module Puma
           # JSON formatter for IO, expects `call` method accepting telemetry hash
           #
           class JSONFormatter
+            # NOTE: Replace dots with dashes for better support of AWS CloudWatch
+            #       Log Metric filters, as they don't support dots in key names.
             def self.call(telemetry)
               log = telemetry.transform_keys { |k| k.tr(".", "-") }
 
