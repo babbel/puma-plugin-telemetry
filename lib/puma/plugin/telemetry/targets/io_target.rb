@@ -13,7 +13,12 @@ module Puma
           #
           class JSONFormatter
             def self.call(telemetry)
-              ::JSON.dump(telemetry.merge(name: "Puma::Plugin::Telemetry", message: "Publish telemetry"))
+              log = telemetry.transform_keys { |k| k.tr(".", "-") }
+
+              log["name"] = "Puma::Plugin::Telemetry"
+              log["message"] = "Publish telemetry"
+
+              ::JSON.dump(log)
             end
           end
 
