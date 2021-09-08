@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         os: ['ubuntu-18.04', 'ubuntu-20.04']
-        ruby: ['2.6', '2.7', '3.0.0-preview2']
+        ruby: ['2.6', '2.7', '3.0']
 
     runs-on: ${{ matrix.os }}
 
@@ -48,7 +48,7 @@ jobs:
         run: |
           echo "build complete"
 
-  release:
+  release-gemfury:
     needs: build
     if: contains(github.ref, 'tags') && github.event_name == 'create'
     runs-on: ubuntu-latest
@@ -63,9 +63,20 @@ jobs:
 
       - name: Build Gem
         run: |
-          gem build *.gemspec
+          gem build *.gemfury.gemspec
 
       - name: Publish Gem
         run: |
           gem push *.gem --key fury_push_token \
                          --host https://push.fury.io/babbel
+
+  release-github:
+    needs: build
+    if: contains(github.ref, 'tags') && github.event_name == 'create'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ruby/setup-ruby@v1
+      - uses: babbel/publish-gem@v1
+        with:
+          gemspec-file: puma-plugin-telemetry.gemspec
