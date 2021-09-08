@@ -78,6 +78,29 @@ Just be mindful that if the API takes long to call, it will slow down frequency 
   config.add_target proc { |telemetry| puts telemetry.map { |k, v| "#{k}=#{v.inspect}" }.join(" ") }
 ```
 
+## Extra middleware
+
+This gems comes together with middleware for measuring request queue time, which will be reported in `request.env` and published to given statsd client.
+
+Example configuration:
+
+```ruby
+# in Gemfile add `require` part
+gem "puma-plugin-telemetry", require: ["rack/request_queue_time_middleware"]
+
+# in initializer, i.e. `request_queue_time.rb`
+Rails.application.config.middleware.insert_after(
+  0,
+  RequestQueueTimeMiddleware,
+  statsd: Datadog::Statsd.new(namespace: "ruby.puma", tags: { "app" => "accounts" })
+)
+
+Rails.application.config.log_tags ||= {}
+Rails.application.config.log_tags[:queue_time] = ->(req) { req.env[::RequestQueueTimeMiddleware::ENV_KEY] }
+```
+
+This will provide proper metric in Datadog and in logs as well. Logs can be transformed into log metrics and used for auto scaling purposes.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
