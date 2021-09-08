@@ -26,12 +26,23 @@ module Puma
             @client = client
           end
 
+          # We are using `gauge` metric type, which means that only the last
+          # value will get send to datadog. DD Statsd client is using extra
+          # thread since v5 for aggregating metrics before it sends them.
+          #
+          # This means that we could publish metrics from here several times
+          # before they get flushed from the aggregation thread, and when they
+          # do, only the last values will get sent.
+          #
+          # That's why we are explicitly calling flush here, in order to persist
+          # all metrics, and not only the most recent ones.
+          #
           def call(telemetry)
-            @client.batch do |statsd|
-              telemetry.each do |metric, value|
-                statsd.gauge(metric, value)
-              end
+            telemetry.each do |metric, value|
+              @client.gauge(metric, value)
             end
+
+            @client.flush(sync: true)
           end
         end
       end
