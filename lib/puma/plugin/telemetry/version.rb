@@ -3,7 +3,7 @@
 module Puma
   class Plugin
     module Telemetry
-      VERSION = "1.0.0"
+      VERSION = "1.1.0.alpha"
     end
   end
 end

@@ -30,8 +30,8 @@ module Puma
           yield(config)
         end
 
-        def build
-          puma_telemetry
+        def build(launcher = nil)
+          socket_telemetry(puma_telemetry, launcher)
         end
 
         private
@@ -46,6 +46,16 @@ module Puma
           data_class
             .new(stats)
             .metrics(config.puma_telemetry)
+        end
+
+        def socket_telemetry(telemetry, launcher)
+          return telemetry if launcher.nil?
+          return telemetry unless config.socket_telemetry?
+
+          telemetry.merge! SocketData.new(launcher.binder.ios)
+                                     .metrics
+
+          telemetry
         end
       end
 
@@ -71,7 +81,7 @@ module Puma
           loop do
             @launcher.events.debug "plugin=telemetry msg=\"publish\""
 
-            call(Puma::Plugin::Telemetry.build)
+            call(Puma::Plugin::Telemetry.build(@launcher))
           rescue Errno::EPIPE
             # Occurs when trying to output to STDOUT while puma is shutting down
           rescue StandardError => e

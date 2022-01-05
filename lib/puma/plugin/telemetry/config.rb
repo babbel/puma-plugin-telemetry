@@ -58,16 +58,29 @@ module Puma
         # - default: DEFAULT_PUMA_TELEMETRY
         attr_accessor :puma_telemetry
 
+        # Whenever to publish socket telemetry.
+        # - default: false
+        attr_accessor :socket_telemetry
+
         def initialize
           @enabled = false
           @initial_delay = 5
           @frequency = 5
           @targets = []
           @puma_telemetry = DEFAULT_PUMA_TELEMETRY
+          @socket_telemetry = false
         end
 
         def enabled?
           !!@enabled
+        end
+
+        def socket_telemetry!
+          @socket_telemetry = true
+        end
+
+        def socket_telemetry?
+          @socket_telemetry
         end
 
         def add_target(name_or_target, **args)
