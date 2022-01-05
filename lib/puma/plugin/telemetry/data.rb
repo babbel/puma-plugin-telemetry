@@ -95,6 +95,71 @@ module Puma
           end
         end
       end
+
+      # Pulls TCP INFO data from socket
+      class SocketData
+        UNACKED_REGEXP = /\ unacked=(?<unacked>\d+)\ /.freeze
+
+        def initialize(ios)
+          @sockets = ios.select { |io| io.respond_to?(:getsockopt) }
+        end
+
+        # Number of unacknowledged connections in the sockets, which
+        # we know as socket backlog.
+        #
+        # The Socket::Option returned by `getsockopt` doesn't provide
+        # any kind of accessors for data inside. It decodes it on demand
+        # for `inspect` as strings in C implementation. It looks like
+        #
+        #     #<Socket::Option: INET TCP INFO state=LISTEN
+        #                                     ca_state=Open
+        #                                     retransmits=0
+        #                                     probes=0
+        #                                     backoff=0
+        #                                     options=0
+        #                                     rto=0.000000s
+        #                                     ato=0.000000s
+        #                                     snd_mss=0
+        #                                     rcv_mss=0
+        #                                     unacked=0
+        #                                     sacked=5
+        #                                     lost=0
+        #                                     retrans=0
+        #                                     fackets=0
+        #                                     last_data_sent=0.000s
+        #                                     last_ack_sent=0.000s
+        #                                     last_data_recv=0.000s
+        #                                     last_ack_recv=0.000s
+        #                                     pmtu=0
+        #                                     rcv_ssthresh=0
+        #                                     rtt=0.000000s
+        #                                     rttvar=0.000000s
+        #                                     snd_ssthresh=0
+        #                                     snd_cwnd=10
+        #                                     advmss=0
+        #                                     reordering=3
+        #                                     rcv_rtt=0.000000s
+        #                                     rcv_space=0
+        #                                     total_retrans=0
+        #                                     (128 bytes too long)>
+        #
+        # That's why we have to pull the `unacked`  field by parsing
+        # `inspect` output, instead of using something like `opt.unacked`
+        def unacked
+          @sockets.sum do |socket|
+            tcp_info = socket.getsockopt(Socket::SOL_TCP, Socket::TCP_INFO).inspect
+            tcp_match = tcp_info.match(UNACKED_REGEXP)
+
+            tcp_match[:unacked].to_i
+          end
+        end
+
+        def metrics
+          {
+            "sockets.backlog" => unacked
+          }
+        end
+      end
     end
   end
 end

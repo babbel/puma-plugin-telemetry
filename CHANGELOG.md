@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0 Alpha]
+
+### Added
+
+Socket telemetry, and to be more precise new metric: `sockets.backlog`. If enabled it will
+pull information from Puma sockets about the state of their backlogs (requests waiting to
+be acknowledged by Puma). It will be exposed under `sockets-backlog` metric.
+
+You can enable and test it via `config.sockets_telemetry!` option.
+
 ## [1.0.0] - 2021-09-08
 ### Added
 - Release to Github Packages
