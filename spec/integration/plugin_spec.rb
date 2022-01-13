@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "timeout"
+require "net/http"
 
 TestTakesTooLongError = Class.new(StandardError)
 
@@ -97,9 +98,24 @@ module Puma
       context "when sockets telemetry" do
         let(:config) { "sockets" }
 
-        it "logs only selected telemetry" do
-          true while (line = @server.next_line) !~ /Puma::Plugin::Telemetry/
-          expect(line).to include "\"sockets-backlog\":0"
+        def make_request
+          Thread.new do
+            Net::HTTP.get_response(URI("http://127.0.0.1:59292/"))
+          end
+        end
+
+        it "logs socket telemetry" do
+          threads = Array.new(2) { make_request }
+
+          sleep 0.1
+
+          threads += Array.new(5) { make_request }
+
+          true while (line = @server.next_line) !~ /sockets.backlog/
+
+          expect(line).to include "queue.backlog=1 sockets.backlog=5"
+
+          threads.each(&:join)
         end
       end
     end

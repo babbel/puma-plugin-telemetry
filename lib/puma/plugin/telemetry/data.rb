@@ -101,7 +101,7 @@ module Puma
         UNACKED_REGEXP = /\ unacked=(?<unacked>\d+)\ /.freeze
 
         def initialize(ios, parser)
-          @sockets = ios.select { |io| io.respond_to?(:getsockopt) }
+          @sockets = ios.select { |io| io.respond_to?(:getsockopt) && io.is_a?(TCPSocket) }
           @parser =
             case parser
             when :inspect then method(:parse_with_inspect)
@@ -117,8 +117,6 @@ module Puma
           @sockets.sum do |socket|
             @parser.call(socket.getsockopt(Socket::SOL_TCP,
                                            Socket::TCP_INFO))
-          rescue Errno::ENOTSUP # in case we don't have a TCP socket
-            0
           end
         end
 

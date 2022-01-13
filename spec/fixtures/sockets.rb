@@ -1,15 +1,30 @@
 # frozen_string_literal: true
 
-app { |_env| [200, {}, ["embedded app"]] }
+@initial_delay = true
+
+app do |_env|
+  sleep(2) if @initial_delay
+
+  # there's only 1 thread, so it should be fine
+  @initial_delay = false
+
+  [200, {}, ["embedded app"]]
+end
+
 lowlevel_error_handler { |_err| [500, {}, ["error page"]] }
 
 threads 1, 1
 plugin "telemetry"
 
+bind "unix://#{ENV["BIND_PATH"]}"
+bind "tcp://localhost:59292"
+
 Puma::Plugin::Telemetry.configure do |config|
-  config.add_target :io, formatter: :json
-  config.frequency = 0.2
+  config.add_target :io, formatter: ->(t) { t.map{|r| r.join("=")}.join(" ") }
+  config.frequency = 1
   config.enabled = true
+
+  config.puma_telemetry = ["queue.backlog"]
 
   # Delay first metric, so puma has time to bootup workers
   config.initial_delay = 2
