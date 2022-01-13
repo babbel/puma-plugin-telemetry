@@ -20,10 +20,12 @@ bind "unix://#{ENV["BIND_PATH"]}"
 bind "tcp://localhost:59292"
 
 Puma::Plugin::Telemetry.configure do |config|
-  config.add_target :io, formatter: ->(t) { t.map{|r| r.join("=")}.join(" ") }
+  # Simple `key=value` formatter
+  config.add_target :io, formatter: ->(t) { t.map { |r| r.join("=") }.join(" ") }
   config.frequency = 1
   config.enabled = true
 
+  # Check how `queue.backlog` from puma behaves
   config.puma_telemetry = ["queue.backlog"]
 
   # Delay first metric, so puma has time to bootup workers

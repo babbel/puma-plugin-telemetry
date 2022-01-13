@@ -9,7 +9,7 @@ class Server
   end
 
   def start
-    @server = IO.popen("BIND_PATH=#{bind_path} bundle exec puma -C spec/fixtures/#{@config}.rb --log-requests --debug", "r")
+    @server = IO.popen("BIND_PATH=#{bind_path} bundle exec puma -C spec/fixtures/#{@config}.rb -v --debug", "r")
     @server_pid = @server.pid
 
     true while next_line !~ /PID:\ /
