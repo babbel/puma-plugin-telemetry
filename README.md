@@ -62,6 +62,8 @@ Puma::Plugin::Telemetry.configure do |config|
   config.initial_delay = 10
   config.frequency = 30
   config.puma_telemetry = %w[workers.requests_count queue.backlog queue.capacity]
+  config.socket_telemetry!
+  config.socket_parser = :inspect
   config.add_target :io, formatter: :json, io: StringIO.new
   config.add_target :dogstatsd, client: Datadog::Statsd.new(tags: { env: ENV["RAILS_ENV"] })
 end

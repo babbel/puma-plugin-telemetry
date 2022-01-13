@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0 Beta]
+
+### Added
+
+Different ways to parse `Socket::Option`. Mainly due to the fact that `#inspect` can't
+generate proper data on AWS Fargate, which runs Amazon Linux 2 with 4.14 kernel. So now
+besides `#inspect` there's also `#unpack` that parses binary data and picks proper field.
+
+It depends on the kernel, but new fields are usually added at the end of the `tcp_info`
+struct, so it should more or less stay stable.
+
+You can configure it by passing in `config.socket_parser = :inspect` or
+`config.socket_parser = ->(opt) { your implementation }`.
+
 ## [1.1.0 Alpha]
 
 ### Added

@@ -93,6 +93,15 @@ module Puma
           expect(lines).to eq(expected_telemetry)
         end
       end
+
+      context "when sockets telemetry" do
+        let(:config) { "sockets" }
+
+        it "logs only selected telemetry" do
+          true while (line = @server.next_line) !~ /Puma::Plugin::Telemetry/
+          expect(line).to include "\"sockets-backlog\":0"
+        end
+      end
     end
   end
 end

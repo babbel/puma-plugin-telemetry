@@ -52,7 +52,7 @@ module Puma
           return telemetry if launcher.nil?
           return telemetry unless config.socket_telemetry?
 
-          telemetry.merge! SocketData.new(launcher.binder.ios)
+          telemetry.merge! SocketData.new(launcher.binder.ios, config.socket_parser)
                                      .metrics
 
           telemetry
