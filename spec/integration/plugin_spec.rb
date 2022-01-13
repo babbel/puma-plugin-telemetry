@@ -113,7 +113,20 @@ module Puma
 
           true while (line = @server.next_line) !~ /sockets.backlog/
 
-          expect(line).to include "queue.backlog=1 sockets.backlog=5"
+          line.strip!
+
+          # either "queue.backlog=1 sockets.backlog=5"
+          #     or "queue.backlog=0 sockets.backlog=6"
+          #
+          # depending on whenever the first 2 requests are
+          # pulled at the same time by Puma from backlog
+          possible_lines = ["queue.backlog=1 sockets.backlog=5",
+                            "queue.backlog=0 sockets.backlog=6"]
+
+          expect(possible_lines.include?(line)).to eq(true)
+
+          total = line.split.sum { |kv| kv.split("=").last.to_i }
+          expect(total).to eq 6
 
           threads.each(&:join)
         end
