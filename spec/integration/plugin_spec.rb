@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "timeout"
+require "net/http"
 
 TestTakesTooLongError = Class.new(StandardError)
 
@@ -91,6 +92,43 @@ module Puma
           lines = ([line.slice(/workers.*/)] + Array.new(6) { @server.next_line.strip })
 
           expect(lines).to eq(expected_telemetry)
+        end
+      end
+
+      context "when sockets telemetry" do
+        let(:config) { "sockets" }
+
+        def make_request
+          Thread.new do
+            Net::HTTP.get_response(URI("http://127.0.0.1:59292/"))
+          end
+        end
+
+        it "logs socket telemetry" do
+          threads = Array.new(2) { make_request }
+
+          sleep 0.1
+
+          threads += Array.new(5) { make_request }
+
+          true while (line = @server.next_line) !~ /sockets.backlog/
+
+          line.strip!
+
+          # either "queue.backlog=1 sockets.backlog=5"
+          #     or "queue.backlog=0 sockets.backlog=6"
+          #
+          # depending on whenever the first 2 requests are
+          # pulled at the same time by Puma from backlog
+          possible_lines = ["queue.backlog=1 sockets.backlog=5",
+                            "queue.backlog=0 sockets.backlog=6"]
+
+          expect(possible_lines.include?(line)).to eq(true)
+
+          total = line.split.sum { |kv| kv.split("=").last.to_i }
+          expect(total).to eq 6
+
+          threads.each(&:join)
         end
       end
     end

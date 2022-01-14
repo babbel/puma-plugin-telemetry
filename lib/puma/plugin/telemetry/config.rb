@@ -62,6 +62,20 @@ module Puma
         # - default: false
         attr_accessor :socket_telemetry
 
+        # Symbol representing method to parse the `Socket::Option`, or
+        # the whole implementation as a lambda. Available options:
+        # - `:inspect`, based on the `Socket::Option#inspect` method,
+        #   it's the safest and slowest way to extract the info. `inspect`
+        #   output might not be available, i.e. on AWS Fargate
+        # - `:unpack`, parse binary data given by `Socket::Option`. Fastest
+        #   way (12x compared to `inspect`) but depends on kernel headers
+        #   and fields ordering within the struct. It should almost always
+        #   match though. DEFAULT
+        # - proc/lambda, `Socket::Option` will be given as an argument, it
+        #   should return the value of `unacked` field as an integer.
+        #
+        attr_accessor :socket_parser
+
         def initialize
           @enabled = false
           @initial_delay = 5
@@ -69,6 +83,7 @@ module Puma
           @targets = []
           @puma_telemetry = DEFAULT_PUMA_TELEMETRY
           @socket_telemetry = false
+          @socket_parser = :unpack
         end
 
         def enabled?
