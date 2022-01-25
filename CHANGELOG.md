@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0]
+
+Out of beta testing, reading for usage. Following is a recap from Alpha & Beta releases.
+
+### Added
+- new metric: `sockets.backlog` (disabled by default), pulls information from Puma
+  sockets about the state of their backlogs. This together with `queue.backlog`
+  allows for full insights into total number of requests waiting to be processed
+- `config.sockets_telemetry!` option to enable sockets telemetry
+- `config.socket_parser` option to allow custom parser implementation as needed
+- Datadog widgets examples under `docs/examples.md`
+
 ## [1.1.0 Beta]
 
 ### Added
