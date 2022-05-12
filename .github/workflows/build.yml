@@ -13,7 +13,7 @@ jobs:
 
     steps:
       # Environment setup
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: actions/cache@v2
         with:
@@ -48,35 +48,11 @@ jobs:
         run: |
           echo "build complete"
 
-  release-gemfury:
+  release:
     needs: build
     if: contains(github.ref, 'tags') && github.event_name == 'create'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: ruby/setup-ruby@v1
-      - name: Prepare Gemfury
-        run: |
-          mkdir -p ~/.gem
-          echo -e "---\n:fury_push_token: ${{ secrets.GEMFURY_TOKEN }}" > ~/.gem/credentials
-          chmod 0600 ~/.gem/credentials
-
-      - name: Build Gem
-        run: |
-          gem build *.gemfury.gemspec
-
-      - name: Publish Gem
-        run: |
-          gem push *.gem --key fury_push_token \
-                         --host https://push.fury.io/babbel
-
-  release-github:
-    needs: build
-    if: contains(github.ref, 'tags') && github.event_name == 'create'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
       - uses: babbel/publish-gem@v1
-        with:
-          gemspec-file: puma-plugin-telemetry.gemspec
