@@ -11,14 +11,14 @@ Gem::Specification.new do |spec|
   spec.license       = 'MIT'
 
   spec.summary     = 'Puma plugin, adding ability to publish various metrics to your prefered targets.'
-  spec.homepage    = 'https://github.com/babbel/puma-plugin-telemetry.gem'
+  spec.homepage    = 'https://github.com/babbel/puma-plugin-telemetry'
 
   spec.required_ruby_version = Gem::Requirement.new('>= 2.6.0')
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/main/CHANGELOG.md"
-  spec.metadata['github_repo'] = 'ssh://github.com/babbel/puma-plugin-telemetry.gem'
+  spec.metadata['github_repo'] = 'ssh://github.com/babbel/puma-plugin-telemetry'
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   # Specify which files should be added to the gem when it is released.
