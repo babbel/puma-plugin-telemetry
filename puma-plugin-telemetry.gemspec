@@ -8,17 +8,17 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Leszek Zalewski']
   spec.email         = ['tnt@babbel.com']
 
-  spec.summary       = 'Write a short summary, because RubyGems requires one.'
-  spec.description   = 'Write a longer description or delete this line.'
-  spec.homepage      = 'https://github.com/lessonnine/puma-plugin-telemetry.gem'
-  spec.required_ruby_version = Gem::Requirement.new('>= 2.6.0')
+  spec.license       = 'MIT'
 
-  spec.metadata['allowed_push_host'] = 'https://rubygems.pkg.github.com/lessonnine'
+  spec.summary     = 'Puma plugin, adding ability to publish various metrics to your prefered targets.'
+  spec.homepage    = 'https://github.com/babbel/puma-plugin-telemetry.gem'
+
+  spec.required_ruby_version = Gem::Requirement.new('>= 2.6.0')
 
   spec.metadata['homepage_uri'] = spec.homepage
   spec.metadata['source_code_uri'] = spec.homepage
   spec.metadata['changelog_uri'] = "#{spec.homepage}/blob/main/CHANGELOG.md"
-  spec.metadata['github_repo'] = 'ssh://github.com/lessonnine/puma-plugin-telemetry.gem'
+  spec.metadata['github_repo'] = 'ssh://github.com/babbel/puma-plugin-telemetry.gem'
   spec.metadata['rubygems_mfa_required'] = 'true'
 
   # Specify which files should be added to the gem when it is released.
