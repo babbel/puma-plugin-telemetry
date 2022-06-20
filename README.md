@@ -125,7 +125,7 @@ All gem releases are manual, in order to create a new release follow:
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/lessonnine/puma-plugin-telemetry.
+Bug reports and pull requests are welcome on GitHub at https://github.com/babbel/puma-plugin-telemetry.
 
 ## License
 
