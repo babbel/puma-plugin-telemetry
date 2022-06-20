@@ -15,22 +15,10 @@ jobs:
       # Environment setup
       - uses: actions/checkout@v3
 
-      - uses: actions/cache@v2
-        with:
-          path: vendor/bundle
-          key: ${{ runner.os }}-$(lsb_release -rs)-gems-${{ hashFiles('**/Gemfile.lock')}}-${{ matrix.ruby }}
-
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-
-      - name: Install dependencies
-        run: |
-          gem install bundler
-
-          bundle config path vendor/bundle
-
-          bundle install
+          bundler-cache: true
 
       - name: Run rubocop
         run: |
@@ -42,7 +30,7 @@ jobs:
 
   build:
     needs: [build_matrix]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: Dummy for branch status checks
         run: |
@@ -51,7 +39,7 @@ jobs:
   release:
     needs: build
     if: contains(github.ref, 'tags') && github.event_name == 'create'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
