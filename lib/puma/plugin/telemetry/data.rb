@@ -6,13 +6,13 @@ module Puma
       # Helper for working with Puma stats
       module CommonData
         TELEMETRY_TO_METHODS = {
-          "workers.booted" => :workers_booted,
-          "workers.total" => :workers_total,
-          "workers.spawned_threads" => :workers_spawned_threads,
-          "workers.max_threads" => :workers_max_threads,
-          "workers.requests_count" => :workers_requests_count,
-          "queue.backlog" => :queue_backlog,
-          "queue.capacity" => :queue_capacity
+          'workers.booted' => :workers_booted,
+          'workers.total' => :workers_total,
+          'workers.spawned_threads' => :workers_spawned_threads,
+          'workers.max_threads' => :workers_max_threads,
+          'workers.requests_count' => :workers_requests_count,
+          'queue.backlog' => :queue_backlog,
+          'queue.capacity' => :queue_capacity
         }.freeze
 
         def initialize(stats)
@@ -122,7 +122,7 @@ module Puma
 
         def metrics
           {
-            "sockets.backlog" => unacked
+            'sockets.backlog' => unacked
           }
         end
 
@@ -261,7 +261,7 @@ module Puma
         # - Ubuntu 20.04 with kernel 5.13
         #
         def parse_with_unpack(tcp_info)
-          tcp_info.unpack("C8L5").last
+          tcp_info.unpack('C8L5').last
         end
       end
     end

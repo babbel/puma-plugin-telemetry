@@ -7,27 +7,27 @@ module Puma
       class Config
         DEFAULT_PUMA_TELEMETRY = [
           # Total booted workers.
-          "workers.booted",
+          'workers.booted',
 
           # Total number of workers configured.
-          "workers.total",
+          'workers.total',
 
           # Current number of threads spawned.
-          "workers.spawned_threads",
+          'workers.spawned_threads',
 
           # Maximum number of threads that can run .
-          "workers.max_threads",
+          'workers.max_threads',
 
           # Number of requests performed so far.
-          "workers.requests_count",
+          'workers.requests_count',
 
           # Number of requests waiting to be processed.
-          "queue.backlog",
+          'queue.backlog',
 
           # Free capacity that could be utilized, i.e. if backlog
           # is growing, and we still have capacity available, it
           # could mean that load balancing is not performing well.
-          "queue.capacity"
+          'queue.capacity'
         ].freeze
 
         TARGETS = {

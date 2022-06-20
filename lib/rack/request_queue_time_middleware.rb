@@ -3,7 +3,7 @@
 # Measures the queue time (= time between receiving the request in downstream
 # load balancer and starting request in ruby process)
 class RequestQueueTimeMiddleware
-  ENV_KEY = "rack.request_queue_time"
+  ENV_KEY = 'rack.request_queue_time'
 
   def initialize(app, statsd:, process: Process)
     @app = app
@@ -36,8 +36,8 @@ class RequestQueueTimeMiddleware
   # Get the content of the x-amzn-trace-id header, the epoch time in seconds.
   # see also: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-request-tracing.html
   def queue_start(env)
-    value = env["HTTP_X_AMZN_TRACE_ID"]
-    value&.split("Root=")&.last&.split("-")&.fetch(1)&.to_i(16)
+    value = env['HTTP_X_AMZN_TRACE_ID']
+    value&.split('Root=')&.last&.split('-')&.fetch(1)&.to_i(16)
   end
 
   def request_start
@@ -47,11 +47,11 @@ class RequestQueueTimeMiddleware
   def report_queue_time(queue_time)
     return if queue_time.nil?
 
-    @statsd.timing("queue.time", queue_time)
+    @statsd.timing('queue.time', queue_time)
 
     return unless defined?(Datadog) && Datadog.respond_to?(:tracer)
 
     span = Datadog.tracer.active_root_span
-    span&.set_tag("request.queue_time", queue_time)
+    span&.set_tag('request.queue_time', queue_time)
   end
 end

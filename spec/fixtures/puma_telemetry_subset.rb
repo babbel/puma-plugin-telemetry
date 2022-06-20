@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-app { |_env| [200, {}, ["embedded app"]] }
-lowlevel_error_handler { |_err| [500, {}, ["error page"]] }
+app { |_env| [200, {}, ['embedded app']] }
+lowlevel_error_handler { |_err| [500, {}, ['error page']] }
 
 threads 1, 2
 workers 2
 
-bind "unix://#{ENV["BIND_PATH"]}"
+bind "unix://#{ENV.fetch('BIND_PATH', nil)}"
 
-plugin "telemetry"
+plugin 'telemetry'
 
 Puma::Plugin::Telemetry.configure do |config|
   config.add_target :io, formatter: :json

@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require "bundler/setup"
-require "puma/plugin/telemetry"
+require 'bundler/setup'
+require 'puma/plugin/telemetry'
 
-require_relative "support/server"
+require_relative 'support/server'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
-  config.example_status_persistence_file_path = ".rspec_status"
+  config.example_status_persistence_file_path = '.rspec_status'
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
