@@ -5,12 +5,6 @@ AllCops:
   TargetRubyVersion: 2.6
   NewCops: enable
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
-
 Metrics/BlockLength:
   Exclude:
     - spec/**/*

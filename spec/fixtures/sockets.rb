@@ -8,25 +8,25 @@ app do |_env|
   # there's only 1 thread, so it should be fine
   @initial_delay = false
 
-  [200, {}, ["embedded app"]]
+  [200, {}, ['embedded app']]
 end
 
-lowlevel_error_handler { |_err| [500, {}, ["error page"]] }
+lowlevel_error_handler { |_err| [500, {}, ['error page']] }
 
 threads 1, 1
-plugin "telemetry"
+plugin 'telemetry'
 
-bind "unix://#{ENV["BIND_PATH"]}"
-bind "tcp://localhost:59292"
+bind "unix://#{ENV.fetch('BIND_PATH', nil)}"
+bind 'tcp://localhost:59292'
 
 Puma::Plugin::Telemetry.configure do |config|
   # Simple `key=value` formatter
-  config.add_target :io, formatter: ->(t) { t.map { |r| r.join("=") }.join(" ") }
+  config.add_target :io, formatter: ->(t) { t.map { |r| r.join('=') }.join(' ') }
   config.frequency = 1
   config.enabled = true
 
   # Check how `queue.backlog` from puma behaves
-  config.puma_telemetry = ["queue.backlog"]
+  config.puma_telemetry = ['queue.backlog']
 
   # Delay first metric, so puma has time to bootup workers
   config.initial_delay = 2

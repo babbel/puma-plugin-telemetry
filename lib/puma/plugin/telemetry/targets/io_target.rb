@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "json"
+require 'json'
 
 module Puma
   class Plugin
@@ -15,10 +15,10 @@ module Puma
             # NOTE: Replace dots with dashes for better support of AWS CloudWatch
             #       Log Metric filters, as they don't support dots in key names.
             def self.call(telemetry)
-              log = telemetry.transform_keys { |k| k.tr(".", "-") }
+              log = telemetry.transform_keys { |k| k.tr('.', '-') }
 
-              log["name"] = "Puma::Plugin::Telemetry"
-              log["message"] = "Publish telemetry"
+              log['name'] = 'Puma::Plugin::Telemetry'
+              log['message'] = 'Publish telemetry'
 
               ::JSON.dump(log)
             end

@@ -3,17 +3,17 @@
 class Server
   attr_reader :lines
 
-  def initialize(config = "config")
+  def initialize(config = 'config')
     @config = config
     @lines = []
   end
 
   def start
-    @server = IO.popen("BIND_PATH=#{bind_path} bundle exec puma -C spec/fixtures/#{@config}.rb -v --debug", "r")
+    @server = IO.popen("BIND_PATH=#{bind_path} bundle exec puma -C spec/fixtures/#{@config}.rb -v --debug", 'r')
     @server_pid = @server.pid
 
     true while next_line !~ /PID:\ /
-    @puma_pid = @lines.last.split(": ").last.to_i
+    @puma_pid = @lines.last.split(': ').last.to_i
 
     true while next_line !~ /Ctrl-C/
   end
@@ -32,12 +32,12 @@ class Server
 
   def next_line
     @lines << @server.gets
-    puts @lines.last if ENV.key?("DEBUG_TEST")
+    puts @lines.last if ENV.key?('DEBUG_TEST')
     @lines.last
   end
 
   def bind_path
-    @bind_path ||= Tempfile.create(["", ".sock"], &:path)
+    @bind_path ||= Tempfile.create(['', '.sock'], &:path)
   end
 
   private

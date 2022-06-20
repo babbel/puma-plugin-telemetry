@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require "puma"
-require "puma/plugin"
+require 'puma'
+require 'puma/plugin'
 
-require "puma/plugin/telemetry/version"
-require "puma/plugin/telemetry/data"
-require "puma/plugin/telemetry/targets/datadog_statsd_target"
-require "puma/plugin/telemetry/targets/io_target"
-require "puma/plugin/telemetry/config"
+require 'puma/plugin/telemetry/version'
+require 'puma/plugin/telemetry/data'
+require 'puma/plugin/telemetry/targets/datadog_statsd_target'
+require 'puma/plugin/telemetry/targets/io_target'
+require 'puma/plugin/telemetry/config'
 
 module Puma
   class Plugin
@@ -64,12 +64,12 @@ module Puma
       module PluginInstanceMethods
         def start(launcher)
           unless Puma::Plugin::Telemetry.config.enabled?
-            launcher.events.log "plugin=telemetry msg=\"disabled, exiting...\""
+            launcher.events.log 'plugin=telemetry msg="disabled, exiting..."'
             return
           end
 
           @launcher = launcher
-          @launcher.events.log "plugin=telemetry msg=\"enabled, setting up runner...\""
+          @launcher.events.log 'plugin=telemetry msg="enabled, setting up runner..."'
 
           in_background do
             sleep Puma::Plugin::Telemetry.config.initial_delay
@@ -79,7 +79,7 @@ module Puma
 
         def run!
           loop do
-            @launcher.events.debug "plugin=telemetry msg=\"publish\""
+            @launcher.events.debug 'plugin=telemetry msg="publish"'
 
             call(Puma::Plugin::Telemetry.build(@launcher))
           rescue Errno::EPIPE
