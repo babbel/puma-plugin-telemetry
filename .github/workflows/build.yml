@@ -37,10 +37,27 @@ jobs:
           echo "build complete"
 
   release:
-    needs: build
-    if: contains(github.ref, 'tags') && github.event_name == 'create'
     runs-on: ubuntu-20.04
+
+    needs:
+      - build
+
+    if: github.event_name == 'create' && startsWith(github.ref, 'refs/tags/v')
+
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
-      - uses: babbel/publish-gem@v1
+
+      - name: Create credentials
+        run: |
+          mkdir ~/.gem
+          cat << EOF > ~/.gem/credentials
+          ---
+          :rubygems_api_key: ${{ secrets.RUBYGEMS_TOKEN }}
+          EOF
+          chmod 0600 /home/runner/.gem/credentials
+
+      - name: Publish gem
+        run: |
+          gem build puma-plugin-telemetry.gemspec
+          gem push puma-plugin-telemetry-*.gem
