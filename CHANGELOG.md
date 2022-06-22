@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1]
+
+Public release.
+
 ## [1.1.0]
 
 Out of beta testing, reading for usage. Following is a recap from Alpha & Beta releases.

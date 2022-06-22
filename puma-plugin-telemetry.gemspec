@@ -2,16 +2,25 @@
 
 require_relative 'lib/puma/plugin/telemetry/version'
 
-Gem::Specification.new do |spec|
-  spec.name          = 'puma-plugin-telemetry'
-  spec.version       = Puma::Plugin::Telemetry::VERSION
-  spec.authors       = ['Leszek Zalewski']
-  spec.email         = ['tnt@babbel.com']
+Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
+  spec.name    = 'puma-plugin-telemetry'
+  spec.version = Puma::Plugin::Telemetry::VERSION
+  spec.authors = ['Leszek Zalewski']
+  spec.email   = ['tnt@babbel.com']
 
-  spec.license       = 'MIT'
+  spec.license = 'MIT'
 
   spec.summary     = 'Puma plugin, adding ability to publish various metrics to your prefered targets.'
-  spec.homepage    = 'https://github.com/babbel/puma-plugin-telemetry'
+  spec.description = <<~TXT
+    Puma plugin which should be able to handle all your metric needs regarding your webserver:
+
+    - ability to publish basic puma statistics (like queue backlog) to both logs and datadog
+    - ability to add custom target whenever you need it
+    - ability to monitor puma socket listen queue (!)
+    - ability to report requests queue time via custom rack middleware - the time request spent between being accepted by Load Balancer and start of its processing by Puma worker
+  TXT
+
+  spec.homepage = 'https://github.com/babbel/puma-plugin-telemetry'
 
   spec.required_ruby_version = Gem::Requirement.new('>= 2.6.0')
 
