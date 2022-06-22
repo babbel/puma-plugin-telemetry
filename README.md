@@ -1,6 +1,11 @@
 # Puma::Plugin::Telemetry
 
-Puma plugin adding ability to publish various metrics to your prefered targets.
+Puma plugin which should be able to handle all your metric needs regarding your webserver:
+
+- ability to publish basic puma statistics (like queue backlog) to both logs and datadog
+- ability to add custom target whenever you need it
+- ability to monitor puma socket listen queue (!)
+- ability to report requests queue time via custom rack middleware - the time request spent between being accepted by Load Balancer and start of its processing by Puma worker
 
 ## Install
 
