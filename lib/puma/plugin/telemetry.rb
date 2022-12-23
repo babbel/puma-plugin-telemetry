@@ -63,13 +63,14 @@ module Puma
       #
       module PluginInstanceMethods
         def start(launcher)
+          @launcher = launcher
+
           unless Puma::Plugin::Telemetry.config.enabled?
-            launcher.events.log 'plugin=telemetry msg="disabled, exiting..."'
+            log_writer.log 'plugin=telemetry msg="disabled, exiting..."'
             return
           end
 
-          @launcher = launcher
-          @launcher.events.log 'plugin=telemetry msg="enabled, setting up runner..."'
+          log_writer.log 'plugin=telemetry msg="enabled, setting up runner..."'
 
           in_background do
             sleep Puma::Plugin::Telemetry.config.initial_delay
@@ -79,13 +80,13 @@ module Puma
 
         def run!
           loop do
-            @launcher.events.debug 'plugin=telemetry msg="publish"'
+            log_writer.debug 'plugin=telemetry msg="publish"'
 
             call(Puma::Plugin::Telemetry.build(@launcher))
           rescue Errno::EPIPE
             # Occurs when trying to output to STDOUT while puma is shutting down
           rescue StandardError => e
-            @launcher.events.error "plugin=telemetry err=#{e.class} msg=#{e.message.inspect}"
+            log_writer.error "plugin=telemetry err=#{e.class} msg=#{e.message.inspect}"
           ensure
             sleep Puma::Plugin::Telemetry.config.frequency
           end
@@ -94,6 +95,16 @@ module Puma
         def call(telemetry)
           Puma::Plugin::Telemetry.config.targets.each do |target|
             target.call(telemetry)
+          end
+        end
+
+        private
+
+        def log_writer
+          if Puma::Const::PUMA_VERSION.to_i < 6
+            @launcher.events
+          else
+            @launcher.log_writer
           end
         end
       end
