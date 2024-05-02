@@ -2,6 +2,7 @@
 
 require 'logger'
 require_relative '../formatters/json_formatter'
+require_relative '../transforms/l2met_transform'
 require_relative '../transforms/noop_transform'
 
 module Puma
@@ -16,6 +17,7 @@ module Puma
             @logger = logger
             @transform = case transform
                          when :noop then Transforms::NoopTransform
+                         when :l2met then Transforms::L2metTransform
                          else transform
                          end
             @formatter = case formatter
