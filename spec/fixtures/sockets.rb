@@ -21,7 +21,7 @@ bind 'tcp://localhost:59292'
 
 Puma::Plugin::Telemetry.configure do |config|
   # Simple `key=value` formatter
-  config.add_target :io, formatter: ->(t) { t.map { |r| r.join('=') }.join(' ') }
+  config.add_target(:io, formatter: :logfmt, transform: :noop)
   config.frequency = 1
   config.enabled = true
 
