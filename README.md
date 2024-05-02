@@ -2,7 +2,7 @@
 
 Puma plugin which should be able to handle all your metric needs regarding your webserver:
 
-- ability to publish basic puma statistics (like queue backlog) to both logs and datadog
+- ability to publish basic puma statistics (like queue backlog) to both logs and Datadog
 - ability to add custom target whenever you need it
 - ability to monitor puma socket listen queue (!)
 - ability to report requests queue time via custom rack middleware - the time request spent between being accepted by Load Balancer and start of its processing by Puma worker
@@ -17,11 +17,15 @@ gem "puma-plugin-telemetry"
 
 And then execute:
 
-    $ bundle install
+```console
+$ bundle install
+```
 
 Or install it yourself as:
 
-    $ gem install puma-plugin-telemetry
+```console
+$ gem install puma-plugin-telemetry
+```
 
 ## Usage
 
@@ -39,15 +43,15 @@ end
 
 ### Basic
 
-Output telemetry as JSON to STDOUT
+Output telemetry as JSON to `STDOUT`
 
 ```ruby
   config.add_target :io
 ```
 
-### Datadog statsd target
+### Datadog StatsD target
 
-Given gem provides built in target for Datadog Statsd client, that uses batch operation to publish metrics.
+Given gem provides built in target for Datadog StatsD client, that uses batch operation to publish metrics.
 
 **NOTE** Be sure to have `dogstatsd` gem installed.
 
@@ -76,7 +80,7 @@ end
 
 ### Custom Targets
 
-Target is a simple object that implements `call` methods that accepts `telemetry` hash object. This means it can be super simple `proc` or some sofisticated class calling some external API.
+Target is a simple object that implements `call` methods that accepts `telemetry` hash object. This means it can be super simple `proc` or some sophisticated class calling some external API.
 
 Just be mindful that if the API takes long to call, it will slow down frequency with which telemetry will get reported.
 
@@ -87,7 +91,7 @@ Just be mindful that if the API takes long to call, it will slow down frequency 
 
 ## Extra middleware
 
-This gems comes together with middleware for measuring request queue time, which will be reported in `request.env` and published to given statsd client.
+This gems comes together with middleware for measuring request queue time, which will be reported in `request.env` and published to given StatsD client.
 
 Example configuration:
 
@@ -110,7 +114,7 @@ This will provide proper metric in Datadog and in logs as well. Logs can be tran
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `bundle exec rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`.
 
