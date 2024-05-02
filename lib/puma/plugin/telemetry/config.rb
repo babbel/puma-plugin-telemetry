@@ -32,7 +32,8 @@ module Puma
 
         TARGETS = {
           dogstatsd: Telemetry::Targets::DatadogStatsdTarget,
-          io: Telemetry::Targets::IOTarget
+          io: Telemetry::Targets::IOTarget,
+          log: Telemetry::Targets::LogTarget
         }.freeze
 
         # Whenever telemetry should run with puma
