@@ -80,6 +80,17 @@ module Puma
             end
           end
 
+          context 'when built in: Log' do
+            it 'adds new target' do
+              expect { config.add_target(:log) }.to change(config.targets, :size).by(1)
+            end
+
+            it 'adds new Log Target' do
+              config.add_target(:log)
+              expect(config.targets.first).to be_a(Telemetry::Targets::LogTarget)
+            end
+          end
+
           context 'when built in: Open Telemetry' do
             let(:meter_provider) { double('otel meter provider', meter: double('otel meter')) }
 

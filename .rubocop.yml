@@ -12,3 +12,7 @@ Metrics/BlockLength:
 Metrics/ClassLength:
   Exclude:
     - spec/**/*
+
+Metrics/ModuleLength:
+  Exclude:
+    - spec/**/*
