@@ -1,6 +1,6 @@
 name: build
 
-on: [push, create]
+on: [push, create, pull_request]
 
 jobs:
   build_matrix:
