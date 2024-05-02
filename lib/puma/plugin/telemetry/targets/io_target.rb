@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require_relative '../formatters/json_formatter'
-require_relative '../transforms/l2met_transform'
-require_relative '../transforms/cloud_watch_transform'
+require_relative 'base_formatting_target'
 
 module Puma
   class Plugin
@@ -10,18 +8,10 @@ module Puma
       module Targets
         # Simple IO Target, publishing metrics to STDOUT or logs
         #
-        class IOTarget
+        class IOTarget < BaseFormattingTarget
           def initialize(io: $stdout, formatter: :json, transform: :cloud_watch)
+            super(formatter: formatter, transform: transform)
             @io = io
-            @transform = case transform
-                         when :cloud_watch then Transforms::CloudWatchTranform
-                         when :l2met then Transforms::L2metTransform
-                         else transform
-                         end
-            @formatter = case formatter
-                         when :json then Formatters::JSONFormatter
-                         else formatter
-                         end
           end
 
           def call(telemetry)
@@ -30,7 +20,7 @@ module Puma
 
           private
 
-          attr_reader :formatter, :io, :transform
+          attr_reader :io
         end
       end
     end
