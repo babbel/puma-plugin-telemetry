@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative '../formatters/json_formatter'
+require_relative '../transforms/l2met_transform'
 require_relative '../transforms/cloud_watch_transform'
 
 module Puma
@@ -14,6 +15,7 @@ module Puma
             @io = io
             @transform = case transform
                          when :cloud_watch then Transforms::CloudWatchTranform
+                         when :l2met then Transforms::L2metTransform
                          else transform
                          end
             @formatter = case formatter
