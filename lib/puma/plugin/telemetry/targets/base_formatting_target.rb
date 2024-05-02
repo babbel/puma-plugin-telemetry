@@ -2,8 +2,10 @@
 
 require_relative '../formatters/json_formatter'
 require_relative '../formatters/logfmt_formatter'
-require_relative '../transforms/l2met_transform'
+require_relative '../formatters/noop_formatter'
 require_relative '../transforms/cloud_watch_transform'
+require_relative '../transforms/l2met_transform'
+require_relative '../transforms/noop_transform'
 
 module Puma
   class Plugin
@@ -13,16 +15,8 @@ module Puma
         #
         class BaseFormattingTarget
           def initialize(formatter: :json, transform: :cloud_watch)
-            @transform = case transform
-                         when :cloud_watch then Transforms::CloudWatchTranform
-                         when :l2met then Transforms::L2metTransform
-                         else transform
-                         end
-            @formatter = case formatter
-                         when :json then Formatters::JSONFormatter
-                         when :logfmt then Formatters::LogfmtFormatter
-                         else formatter
-                         end
+            @formatter = FORMATTERS.fetch(formatter) { formatter }
+            @transform = TRANSFORMS.fetch(transform) { transform }
           end
 
           def call(_telemetry)
@@ -32,9 +26,22 @@ module Puma
           private
 
           attr_reader :formatter, :transform
+
+          FORMATTERS = {
+            json: Formatters::JSONFormatter,
+            logfmt: Formatters::LogfmtFormatter,
+            noop: Formatters::NoopFormatter
+          }.freeze
+          private_constant :FORMATTERS
+
+          TRANSFORMS = {
+            cloud_watch: Transforms::CloudWatchTranform,
+            l2met: Transforms::L2metTransform,
+            noop: Transforms::NoopTransform
+          }.freeze
+          private_constant :TRANSFORMS
         end
       end
     end
   end
 end
-

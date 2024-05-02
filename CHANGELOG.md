@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Add new `LogTarget`
+- Introduce new `formatter:` options: `:json`, `:logfmt`, and `:noop`
+- Introduce new `transform:` options: `:cloud_watch`, `:l2met`, and `:noop`
+
 ## [1.1.4]
 
 ### Changed
