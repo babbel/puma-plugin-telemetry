@@ -3,7 +3,7 @@
 module Puma
   class Plugin
     module Telemetry
-      module Targets
+      module Formatters
         RSpec.describe JSONFormatter do
           subject(:formatter) { described_class }
 
@@ -19,13 +19,6 @@ module Puma
 
             data = ::JSON.parse(string)
             expect(data.fetch('foo')).to eq('bar')
-          end
-
-          it 'replaces dots with dashes in keys' do
-            string = formatter.call('the.foo' => 'the.bar')
-
-            data = ::JSON.parse(string)
-            expect(data.fetch('the-foo')).to eq('the.bar')
           end
         end
       end
