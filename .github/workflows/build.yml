@@ -6,14 +6,23 @@ jobs:
   build_matrix:
     strategy:
       matrix:
-        os: ['ubuntu-18.04', 'ubuntu-20.04']
-        ruby: ['2.6', '2.7', '3.0', '3.1']
+        os:
+          - 'ubuntu-18.04'
+          - 'ubuntu-20.04'
+          - 'ubuntu-latest'
+        ruby:
+          - "2.6"
+          - "2.7"
+          - "3.0"
+          - "3.1"
+          - "3.2"
+          - "3.3"
 
     runs-on: ${{ matrix.os }}
 
     steps:
       # Environment setup
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - uses: ruby/setup-ruby@v1
         with:
@@ -45,7 +54,7 @@ jobs:
     if: github.event_name == 'create' && startsWith(github.ref, 'refs/tags/v')
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
 
       - name: Create credentials
