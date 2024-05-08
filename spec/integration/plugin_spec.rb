@@ -50,12 +50,12 @@ module Puma
         end
 
         it 'executes the first target' do
-          true while (line = @server.next_line) !~ /target=01/
+          true until (line = @server.next_line).include?('target=01')
           expect(line).to start_with "target=01 telemetry=#{expected_telemetry.inspect}"
         end
 
         it 'executes the second target' do
-          true while (line = @server.next_line) !~ /target=02/
+          true until (line = @server.next_line).include?('target=02')
           expect(line).to start_with "target=02 telemetry=#{expected_telemetry.inspect}"
         end
       end
@@ -67,7 +67,7 @@ module Puma
         end
 
         it 'logs only selected telemetry' do
-          true while (line = @server.next_line) !~ /Puma::Plugin::Telemetry/
+          true until (line = @server.next_line).include?('Puma::Plugin::Telemetry')
           expect(line).to start_with expected_telemetry
         end
       end
@@ -87,7 +87,7 @@ module Puma
         end
 
         it "doesn't crash" do
-          true while (line = @server.next_line) !~ /DEBUG -- : Statsd/
+          true until (line = @server.next_line).include?('DEBUG -- : Statsd')
 
           lines = ([line.slice(/workers.*/)] + Array.new(6) { @server.next_line.strip })
 
