@@ -12,10 +12,10 @@ class Server
     @server = IO.popen("BIND_PATH=#{bind_path} bundle exec puma -C spec/fixtures/#{@config}.rb -v --debug", 'r')
     @server_pid = @server.pid
 
-    true while next_line !~ /PID:\ /
+    true until next_line.include?('PID: ')
     @puma_pid = @lines.last.split(': ').last.to_i
 
-    true while next_line !~ /Ctrl-C/
+    true until next_line.include?('Ctrl-C')
   end
 
   def stop

@@ -1,11 +1,22 @@
-/.bundle/
-/.yardoc
-/_yardoc/
-/coverage/
-/doc/
-/pkg/
-/spec/reports/
+# Ignore all logfiles and tempfiles
 /tmp/
+/tags
 
-# rspec failure tracking
+# Environment normalisation
+/.rspec-local
+/.yardoc
+/_yardoc
+/lib/bundler/man/
+
+# Gem packaging stuff
+/*.gem
+/pkg/
+
+# Dependencies and such
+/.bundle
+/.ruby-version
+
+# Spec housekeeping
+/coverage/
+/spec/reports
 .rspec_status
