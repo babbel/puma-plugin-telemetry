@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3]
+
+### Changed
+- Updated gems in the lockfile
+
+### Added
+- Support for Ruby 3.2 and 3.3
+
+### Dropped
+- Check for support for 'ubuntu-18.04'
+
 ## [1.1.2]
 
 - Add Puma 6 compatibility
