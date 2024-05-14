@@ -41,22 +41,61 @@ Puma::Plugin::Telemetry.configure do |config|
 end
 ```
 
-### Basic
+### Basic IO Target
 
-Output telemetry as JSON to `STDOUT`
+A basic I/O target will emit telemetry data to `STDOUT`, formatted in JSON.
 
 ```ruby
-  config.add_target :io
+config.add_target :io
 ```
+
+#### Options
+
+This target has configurable `formatter:` and `transform:` options.
+The `formatter:` options are
+
+* `:json` _(default)_ - Print the logs in JSON.
+* `:logfmt` - Print the logs in key/value pairs, as per `logfmt`.
+* `:noop` - A NOOP formatter which returns the telemetry `Hash` unaltered, passing it directly to the `io:` instance.
+
+The `transform:` options are
+
+* `:cloud_watch` _(default)_ - Transforms telemetry keys, replacing dots with dashes to support AWS CloudWatch Log Metrics filters.
+* `:logfmt` - Transforms telemetry keys, prepending `sample#` for [L2Met][l2met] consumption.
+* `:noop` -  A NOOP transform which returns the telemetry `Hash` unaltered.
+
+### Log target
+
+Emitting to `STDOUT` via the basic `IOTarget` can work for getting telemetry into logs, we also provide an explicit `LogTarget`.
+This target will defaults to emitting telemetry at the `INFO` log level via a [standard library `::Logger`][logger] instance.
+That default logger will print to `STDOUT` in [the `logfmt` format][logfmt].
+
+```ruby
+config.add_target :log
+```
+
+You can pass an explicit `logger:` option if you wanted to, for example, use the same logger as Rails.
+
+```ruby
+config.add_target :log, logger: Rails.logger
+```
+
+This target also has configurable `formatter:` and `transform:` options.
+The [possible options are the same as for the `IOTarget`](#options), but the defaults are different.
+The `LogTarget` defaults to `formatter: :logfmt`, and `transform: :noop`
+
+[l2met]: https://github.com/ryandotsmith/l2met?tab=readme-ov-file#l2met "l2met - Logs to Metrics"
+[logfmt]: https://brandur.org/logfmt "logfmt - Structured log format"
+[logger]: https://rubyapi.org/o/logger "Ruby's Logger, from the stdlib"
 
 ### Datadog StatsD target
 
-Given gem provides built in target for Datadog StatsD client, that uses batch operation to publish metrics.
+A target for the Datadog StatsD client, that uses batch operation to publish metrics.
 
-**NOTE** Be sure to have `dogstatsd` gem installed.
+**NOTE** Be sure to have the `dogstatsd` gem installed.
 
 ```ruby
-  config.add_target :dogstatsd, client: Datadog::Statsd.new
+config.add_target :dogstatsd, client: Datadog::Statsd.new
 ```
 
 You can provide all the tags, namespaces, and other configuration options as always to `Datadog::Statsd.new` method.
@@ -75,6 +114,7 @@ Puma::Plugin::Telemetry.configure do |config|
   config.socket_parser = :inspect
   config.add_target :io, formatter: :json, io: StringIO.new
   config.add_target :dogstatsd, client: Datadog::Statsd.new(tags: { env: ENV["RAILS_ENV"] })
+  config.add_target :log, logger: Rails.logger, formatter: :logfmt, transform: :l2met)
 end
 ```
 
@@ -85,8 +125,8 @@ Target is a simple object that implements `call` methods that accepts `telemetry
 Just be mindful that if the API takes long to call, it will slow down frequency with which telemetry will get reported.
 
 ```ruby
-  # Example logfmt to stdout target
-  config.add_target proc { |telemetry| puts telemetry.map { |k, v| "#{k}=#{v.inspect}" }.join(" ") }
+  # Example key/value log to `STDOUT` target
+  config.add_target ->(telemetry) { puts telemetry.map { |k, v| "#{k}=#{v.inspect}" }.join(" ") }
 ```
 
 ## Extra middleware

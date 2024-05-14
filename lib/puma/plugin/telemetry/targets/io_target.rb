@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'json'
+require_relative 'base_formatting_target'
 
 module Puma
   class Plugin
@@ -8,33 +8,19 @@ module Puma
       module Targets
         # Simple IO Target, publishing metrics to STDOUT or logs
         #
-        class IOTarget
-          # JSON formatter for IO, expects `call` method accepting telemetry hash
-          #
-          class JSONFormatter
-            # NOTE: Replace dots with dashes for better support of AWS CloudWatch
-            #       Log Metric filters, as they don't support dots in key names.
-            def self.call(telemetry)
-              log = telemetry.transform_keys { |k| k.tr('.', '-') }
-
-              log['name'] = 'Puma::Plugin::Telemetry'
-              log['message'] = 'Publish telemetry'
-
-              ::JSON.dump(log)
-            end
-          end
-
-          def initialize(io: $stdout, formatter: :json)
+        class IOTarget < BaseFormattingTarget
+          def initialize(io: $stdout, formatter: :json, transform: :cloud_watch)
+            super(formatter: formatter, transform: transform)
             @io = io
-            @formatter = case formatter
-                         when :json then JSONFormatter
-                         else formatter
-                         end
           end
 
           def call(telemetry)
-            @io.puts(@formatter.call(telemetry))
+            io.puts(formatter.call(transform.call(telemetry)))
           end
+
+          private
+
+          attr_reader :io
         end
       end
     end
