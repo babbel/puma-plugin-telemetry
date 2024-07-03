@@ -4,10 +4,10 @@ module Puma
   class Plugin
     module Telemetry
       module Formatters
-        # A pass-through formatter - it returns the telemetry Hash it was given
-        class PassthroughFormatter
+        # Logfmt formatter, expects `call` method accepting telemetry hash
+        class LogfmtFormatter
           def self.call(telemetry)
-            telemetry
+            telemetry.map { |k, v| "#{String(k)}=#{v.inspect}" }.join(' ')
           end
         end
       end
