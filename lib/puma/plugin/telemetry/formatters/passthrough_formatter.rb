@@ -1,15 +1,13 @@
 # frozen_string_literal: true
 
-require 'json'
-
 module Puma
   class Plugin
     module Telemetry
       module Formatters
-        # JSON formatter, expects `call` method accepting telemetry hash
-        class JSONFormatter
+        # A passthrough formatter - it returns the telemetry Hash it was given
+        class PassthroughFormatter
           def self.call(telemetry)
-            ::JSON.dump(telemetry)
+            telemetry
           end
         end
       end
