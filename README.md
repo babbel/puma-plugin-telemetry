@@ -41,22 +41,35 @@ Puma::Plugin::Telemetry.configure do |config|
 end
 ```
 
-### Basic
+### Basic IO Target
 
-Output telemetry as JSON to `STDOUT`
+A basic I/O target will emit telemetry data to `STDOUT`, formatted in JSON.
 
 ```ruby
-  config.add_target :io
+config.add_target :io
 ```
+
+#### Options
+
+This target has configurable `formatter:` and `transform:` options.
+The `formatter:` options are
+
+* `:json` _(default)_ - Print the logs in JSON.
+* `:passthrough` - A passthrough formatter which returns the telemetry `Hash` unaltered, passing it directly to the `io:` instance.
+
+The `transform:` options are
+
+* `:cloud_watch` _(default)_ - Transforms telemetry keys, replacing dots with dashes to support AWS CloudWatch Log Metrics filters.
+* `:passthrough` -  A passthrough transform which returns the telemetry `Hash` unaltered.
 
 ### Datadog StatsD target
 
-Given gem provides built in target for Datadog StatsD client, that uses batch operation to publish metrics.
+A target for the Datadog StatsD client, that uses batch operation to publish metrics.
 
-**NOTE** Be sure to have `dogstatsd` gem installed.
+**NOTE** Be sure to have the `dogstatsd` gem installed.
 
 ```ruby
-  config.add_target :dogstatsd, client: Datadog::Statsd.new
+config.add_target :dogstatsd, client: Datadog::Statsd.new
 ```
 
 You can provide all the tags, namespaces, and other configuration options as always to `Datadog::Statsd.new` method.
@@ -73,7 +86,7 @@ Puma::Plugin::Telemetry.configure do |config|
   config.puma_telemetry = %w[workers.requests_count queue.backlog queue.capacity]
   config.socket_telemetry!
   config.socket_parser = :inspect
-  config.add_target :io, formatter: :json, io: StringIO.new
+  config.add_target :io, io: StringIO.new, formatter: :json, transform: :passthrough
   config.add_target :dogstatsd, client: Datadog::Statsd.new(tags: { env: ENV["RAILS_ENV"] })
 end
 ```
@@ -85,8 +98,8 @@ Target is a simple object that implements `call` methods that accepts `telemetry
 Just be mindful that if the API takes long to call, it will slow down frequency with which telemetry will get reported.
 
 ```ruby
-  # Example logfmt to stdout target
-  config.add_target proc { |telemetry| puts telemetry.map { |k, v| "#{k}=#{v.inspect}" }.join(" ") }
+  # Example key/value log to `STDOUT` target
+  config.add_target ->(telemetry) { puts telemetry.map { |k, v| "#{k}=#{v.inspect}" }.join(" ") }
 ```
 
 ## Extra middleware
