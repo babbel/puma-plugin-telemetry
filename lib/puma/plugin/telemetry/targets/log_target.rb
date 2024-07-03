@@ -10,7 +10,7 @@ module Puma
         # Simple Log Target, publishing metrics to a Ruby ::Logger at stdout
         # at the INFO log level
         class LogTarget < BaseFormattingTarget
-          def initialize(logger: ::Logger.new($stdout), formatter: :json, transform: :passthrough)
+          def initialize(logger: ::Logger.new($stdout), formatter: :logfmt, transform: :passthrough)
             super(formatter: formatter, transform: transform)
             @logger = logger
           end

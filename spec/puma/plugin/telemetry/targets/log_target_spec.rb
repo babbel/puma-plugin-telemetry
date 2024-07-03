@@ -16,6 +16,18 @@ module Puma
 
             expect(io.string).to include('INFO').and(include('foo=bar'))
           end
+
+          context 'with default formatter and transform' do
+            subject(:target) { described_class.new(logger: logger) }
+
+            let(:telemetry) { { 'queue.backlog' => 2 } }
+
+            it 'logs logfmt output with the telemetry keys untransformed' do
+              target.call(telemetry)
+
+              expect(io.string).to include('queue.backlog=2')
+            end
+          end
         end
       end
     end
