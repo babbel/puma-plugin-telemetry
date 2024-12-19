@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 
+begin
+  require 'datadog/statsd'
+rescue LoadError
+  # Gracefully handle the case when Datadog::Statsd is not installed
+end
+
 module Puma
   class Plugin
     module Telemetry
@@ -22,7 +28,13 @@ module Puma
         #     DatadogStatsdTarget.new(client: client)
         #
         class DatadogStatsdTarget
+          def self.available?
+            !defined?(Datadog::Statsd).nil?
+          end
+          
           def initialize(client:)
+            raise ArgumentError, ':dogstatsd target can only be used when `datadog/statsd` gem is installed' unless self.class.available?
+
             @client = client
           end
 
