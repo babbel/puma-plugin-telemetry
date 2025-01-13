@@ -1,11 +1,5 @@
 # frozen_string_literal: true
 
-begin
-  require 'opentelemetry-metrics-sdk'
-rescue LoadError
-  # Gracefully handle the case when OpenTelemetry Metrics SDK is not installed
-end
-
 module Puma
   class Plugin
     module Telemetry
@@ -19,13 +13,7 @@ module Puma
         #     OpenTelemetryTarget.new(meter_provider: OpenTelemetry.meter_provider, prefix: 'puma')
         #
         class OpenTelemetryTarget
-          def self.available?
-            !defined?(OpenTelemetry::SDK::Metrics).nil?
-          end
-
           def initialize(meter_provider:, prefix: nil, suffix: nil, attributes: {})
-            raise ArgumentError, ':open_telemetry target can only be used when the `opentelemetry-metrics-sdk` and `opentelemetry-exporter-otlp-metrics` gems are installed' unless self.class.available?
-
             @meter_provider = meter_provider
             @meter          = meter_provider.meter('puma.telemetry')
             @prefix         = prefix
@@ -49,7 +37,7 @@ module Puma
               instrument(metric).record(value, attributes: @attributes)
             end
 
-            @meter_provider.try(:force_flush)
+            @meter_provider.force_flush
           end
 
           def instrument(metric)
