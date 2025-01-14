@@ -6,7 +6,10 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'dogstatsd-ruby'
-
+gem 'opentelemetry-exporter-otlp'
+gem 'opentelemetry-exporter-otlp-metrics', '~> 0.3'
+gem 'opentelemetry-metrics-sdk', '~> 0.5'
+gem 'opentelemetry-sdk'
 gem 'rack'
 gem 'rake', '~> 13.0'
 gem 'rspec', '~> 3.0'

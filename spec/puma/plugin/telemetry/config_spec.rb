@@ -45,6 +45,21 @@ module Puma
             end
           end
 
+          context 'when built in: Open Telemetry' do
+            let(:meter_provider) { double('otel meter provider', meter: double('otel meter')) }
+
+            it 'adds new target' do
+              expect do
+                config.add_target(:open_telemetry, meter_provider: meter_provider)
+              end.to change(config.targets, :size).by(1)
+            end
+
+            it 'adds new Open Telemetry Target' do
+              config.add_target(:open_telemetry, meter_provider: meter_provider)
+              expect(config.targets.first).to be_a(Telemetry::Targets::OpenTelemetryTarget)
+            end
+          end
+
           context 'when custom' do
             let(:target) { proc { |telemetry| puts telemetry.inspect } }
 
