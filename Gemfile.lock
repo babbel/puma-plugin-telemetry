@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    puma-plugin-telemetry (1.1.4)
+    puma-plugin-telemetry (2.0.0)
       puma (< 7)
 
 GEM
