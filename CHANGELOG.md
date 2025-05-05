@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Updated gems in the lockfile
+
+### Added
+- Check for support for 'ubuntu-24.04'
+- Check for support for Ruby 3.4
+
+### Dropped
+- Check for support for 'ubuntu-20.04'
+- Check for support for Ruby 2.6 and 2.7
+
+
 ## [1.1.4]
 
 ### Changed
