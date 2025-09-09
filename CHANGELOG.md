@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Updated gems in the lockfile
+- Allow Puma 7
 
 ### Added
 - Check for support for 'ubuntu-24.04'
