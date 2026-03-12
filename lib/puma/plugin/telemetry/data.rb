@@ -3,16 +3,29 @@
 module Puma
   class Plugin
     module Telemetry
+      # Metric name constants for telemetry data
+      module Metrics
+        WORKERS_BOOTED = 'workers.booted'
+        WORKERS_TOTAL = 'workers.total'
+        WORKERS_SPAWNED_THREADS = 'workers.spawned_threads'
+        WORKERS_MAX_THREADS = 'workers.max_threads'
+        WORKERS_REQUESTS_COUNT = 'workers.requests_count'
+        WORKERS_BUSY_THREADS = 'workers.busy_threads'
+        QUEUE_BACKLOG = 'queue.backlog'
+        QUEUE_CAPACITY = 'queue.capacity'
+      end
+
       # Helper for working with Puma stats
       module CommonData
         TELEMETRY_TO_METHODS = {
-          'workers.booted' => :workers_booted,
-          'workers.total' => :workers_total,
-          'workers.spawned_threads' => :workers_spawned_threads,
-          'workers.max_threads' => :workers_max_threads,
-          'workers.requests_count' => :workers_requests_count,
-          'queue.backlog' => :queue_backlog,
-          'queue.capacity' => :queue_capacity
+          Metrics::WORKERS_BOOTED => :workers_booted,
+          Metrics::WORKERS_TOTAL => :workers_total,
+          Metrics::WORKERS_SPAWNED_THREADS => :workers_spawned_threads,
+          Metrics::WORKERS_MAX_THREADS => :workers_max_threads,
+          Metrics::WORKERS_REQUESTS_COUNT => :workers_requests_count,
+          Metrics::WORKERS_BUSY_THREADS => :workers_busy_threads,
+          Metrics::QUEUE_BACKLOG => :queue_backlog,
+          Metrics::QUEUE_CAPACITY => :queue_capacity
         }.freeze
 
         def initialize(stats)
@@ -52,6 +65,10 @@ module Puma
           @stats.fetch(:running, 0)
         end
 
+        def workers_busy_threads
+          @stats.fetch(:busy_threads, 0)
+        end
+
         def queue_backlog
           @stats.fetch(:backlog, 0)
         end
@@ -77,6 +94,10 @@ module Puma
 
         def workers_spawned_threads
           sum_stat(:running)
+        end
+
+        def workers_busy_threads
+          sum_stat(:busy_threads)
         end
 
         def queue_backlog

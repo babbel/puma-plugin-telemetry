@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'socket'
+
 module Puma
   class Plugin
     module Telemetry
@@ -22,8 +24,11 @@ module Puma
         #     DatadogStatsdTarget.new(client: client)
         #
         class DatadogStatsdTarget
+          TAGGED_METRICS = [Telemetry::Metrics::WORKERS_BUSY_THREADS].freeze
+
           def initialize(client:)
             @client = client
+            @hostname = Socket.gethostname
           end
 
           # We are using `gauge` metric type, which means that only the last
@@ -39,7 +44,11 @@ module Puma
           #
           def call(telemetry)
             telemetry.each do |metric, value|
-              @client.gauge(metric, value)
+              if TAGGED_METRICS.include?(metric)
+                @client.gauge(metric, value, tags: ["process:#{@hostname}"])
+              else
+                @client.gauge(metric, value)
+              end
             end
 
             @client.flush(sync: true)
