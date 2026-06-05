@@ -15,6 +15,9 @@ module Puma
           # Current number of threads spawned.
           'workers.spawned_threads',
 
+          # Current number of busy threads, when exposed by Puma.
+          'workers.busy_threads',
+
           # Maximum number of threads that can run .
           'workers.max_threads',
 

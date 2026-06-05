@@ -70,7 +70,7 @@ Puma::Plugin::Telemetry.configure do |config|
   config.enabled = true
   config.initial_delay = 10
   config.frequency = 30
-  config.puma_telemetry = %w[workers.requests_count queue.backlog queue.capacity]
+  config.puma_telemetry = %w[workers.requests_count workers.busy_threads queue.backlog queue.capacity]
   config.socket_telemetry!
   config.socket_parser = :inspect
   config.add_target :io, formatter: :json, io: StringIO.new

@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Check for support for 'ubuntu-24.04'
 - Check for support for Ruby 3.4
+- Require Puma 6.6 or newer and emit `busy_threads` as `workers.busy_threads`
 
 ### Dropped
 - Check for support for 'ubuntu-20.04'

@@ -2,7 +2,7 @@ PATH
   remote: .
   specs:
     puma-plugin-telemetry (1.1.4)
-      puma (< 7)
+      puma (>= 6.6, < 7)
 
 GEM
   remote: https://rubygems.org/
