@@ -42,5 +42,5 @@ Gem::Specification.new do |spec| # rubocop:disable Metrics/BlockLength
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'puma', '< 7'
+  spec.add_dependency 'puma', '< 8'
 end

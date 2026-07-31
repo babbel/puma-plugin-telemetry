@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+- Allow puma 7 (#35)
 - Updated gems in the lockfile
 
 ### Added
