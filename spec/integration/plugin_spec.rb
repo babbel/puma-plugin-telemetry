@@ -105,6 +105,10 @@ module Puma
         end
 
         it 'logs socket telemetry' do
+          unless defined?(Socket::SOL_TCP) && defined?(Socket::TCP_INFO)
+            skip("Socket::SOL_TCP and/or Socket::TCP_INFO not defined on #{RUBY_PLATFORM}")
+          end
+
           threads = Array.new(2) { make_request }
 
           sleep 0.1

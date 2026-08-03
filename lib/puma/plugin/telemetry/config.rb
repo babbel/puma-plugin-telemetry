@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'socket'
+
 module Puma
   class Plugin
     module Telemetry
@@ -91,7 +93,15 @@ module Puma
         end
 
         def socket_telemetry!
-          @socket_telemetry = true
+          # These structs are platform specific, and not available on macOS,
+          # for example. If they're undefined, then we cannot capture socket
+          # telemetry. We'll warn in that case.
+          if defined?(Socket::SOL_TCP) && defined?(Socket::TCP_INFO)
+            @socket_telemetry = true
+          else
+            @socket_telemetry = false
+            warn("Cannot capture socket telemetry on this platform (#{RUBY_PLATFORM}); socket_telemetry is disabled.")
+          end
         end
 
         def socket_telemetry?
