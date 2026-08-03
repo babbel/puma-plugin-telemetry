@@ -64,6 +64,7 @@ module Puma
       module PluginInstanceMethods
         def start(launcher)
           @launcher = launcher
+          @stopped = false
 
           unless Puma::Plugin::Telemetry.config.enabled?
             log_writer.log 'plugin=telemetry msg="disabled, exiting..."'
@@ -79,13 +80,8 @@ module Puma
           loop do
             break if stopped?
 
-            publish
-          rescue IOError, Errno::EPIPE
-            # Puma closes the IO streams during shutdown, stop publishing
-            break
-          rescue StandardError => e
-            log_writer.unknown_error(e, nil, 'plugin=telemetry')
-          ensure
+            break unless try_publish
+
             sleep Puma::Plugin::Telemetry.config.frequency
           end
         end
@@ -115,10 +111,28 @@ module Puma
           end
         end
 
+        def try_publish
+          publish
+          true
+        rescue IOError, Errno::EPIPE
+          # Puma closes the IO streams during shutdown, stop publishing
+          log_safely 'plugin=telemetry msg="IO stream closed, stopping the runner"'
+          false
+        rescue StandardError => e
+          log_writer.unknown_error(e, nil, 'plugin=telemetry')
+          true
+        end
+
         def publish
           log_writer.debug 'plugin=telemetry msg="publish"'
 
           call(Puma::Plugin::Telemetry.build(@launcher))
+        end
+
+        def log_safely(message)
+          log_writer.log(message)
+        rescue IOError, Errno::EPIPE
+          nil
         end
 
         def log_writer

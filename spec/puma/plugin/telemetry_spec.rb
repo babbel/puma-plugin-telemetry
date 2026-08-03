@@ -85,6 +85,29 @@ module Puma
 
               expect(calls.size).to eq(1)
             end
+
+            it 'logs that the runner stops' do
+              Timeout.timeout(1) { plugin.run! }
+
+              expect(log_writer).to have_received(:log)
+                .with('plugin=telemetry msg="IO stream closed, stopping the runner"')
+            end
+
+            it 'does not sleep before stopping' do
+              config.frequency = 60
+
+              Timeout.timeout(1) { plugin.run! }
+
+              expect(calls.size).to eq(1)
+            end
+
+            context 'when the log stream is also closed' do
+              before { allow(log_writer).to receive(:log).and_raise(IOError) }
+
+              it 'stops without raising' do
+                expect { Timeout.timeout(1) { plugin.run! } }.not_to raise_error
+              end
+            end
           end
 
           context 'when the target raises Errno::EPIPE' do
@@ -166,6 +189,14 @@ module Puma
             hooks.each(&:call)
 
             expect(plugin).to be_stopped
+          end
+
+          it 'resets a previous stop' do
+            plugin.stop!
+
+            plugin.start(launcher)
+
+            expect(plugin).not_to be_stopped
           end
 
           context 'when disabled' do

@@ -8,8 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Fixed
-- Stop the telemetry runner when puma shuts down or when the target IO stream is closed. This prevents `IOError: closed stream` errors during shutdown (#31)
-- Log target errors with `unknown_error` instead of `error`, so a failed publish does not make puma exit (#31)
+- Stop the telemetry runner when puma shuts down or when the target IO stream is closed. This prevents `IOError: closed stream` errors during shutdown (#31, #45)
+- Log target errors with `unknown_error` instead of `error`, so a failed publish does not make puma exit (#31, #45)
 
 ## [1.1.6]
 
