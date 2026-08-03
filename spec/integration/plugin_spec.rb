@@ -119,18 +119,18 @@ module Puma
 
           line.strip!
 
-          # either "queue.backlog=1 sockets.backlog=5"
-          #     or "queue.backlog=0 sockets.backlog=6"
-          #
-          # depending on whenever the first 2 requests are
-          # pulled at the same time by Puma from backlog
-          possible_lines = ['queue.backlog=1 sockets.backlog=5',
-                            'queue.backlog=0 sockets.backlog=6']
+          metrics = line.split.to_h do |kv|
+            key, value = kv.split('=')
+            [key, value.to_i]
+          end
 
-          expect(possible_lines).to include(line)
-
-          total = line.split.sum { |kv| kv.split('=').last.to_i }
-          expect(total).to eq 6
+          # One request is in the app, the other 6 wait either in
+          # puma's own queue or in the socket backlog. Puma 6 leaves
+          # most of them unacked in the socket backlog, puma 7 accepts
+          # them eagerly into its queue (puma/puma#3678). Assert on
+          # the total so both versions pass.
+          expect(metrics.keys).to contain_exactly('queue.backlog', 'sockets.backlog')
+          expect(metrics.values.sum).to eq 6
 
           threads.each(&:join)
         end
