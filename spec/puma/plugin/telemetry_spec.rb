@@ -1,5 +1,9 @@
 # frozen_string_literal: true
 
+require 'timeout'
+
+require 'puma/events'
+
 module Puma
   class Plugin
     RSpec.describe Telemetry do
@@ -38,6 +42,140 @@ module Puma
         describe 'plugin registration' do
           it 'works' do
             expect(plugin).to respond_to(:start)
+          end
+        end
+
+        describe '#run!' do
+          let(:log_writer) do
+            instance_double(Puma::LogWriter, debug: nil, log: nil, unknown_error: nil).tap do |writer|
+              allow(writer).to receive(:error) { exit(1) }
+            end
+          end
+
+          let(:launcher) { instance_double(Puma::Launcher, log_writer: log_writer) }
+
+          let(:config) do
+            Telemetry::Config.new.tap do |c|
+              c.frequency = 0
+              c.targets = [target]
+            end
+          end
+
+          let(:calls) { [] }
+
+          before do
+            allow(described_class).to receive_messages(config: config, build: {})
+            plugin.instance_variable_set(:@launcher, launcher)
+          end
+
+          context 'when the target raises IOError' do
+            let(:target) do
+              proc do
+                calls << 1
+                raise IOError, 'closed stream'
+              end
+            end
+
+            it 'stops the loop without raising' do
+              expect { Timeout.timeout(1) { plugin.run! } }.not_to raise_error
+            end
+
+            it 'stops publishing' do
+              Timeout.timeout(1) { plugin.run! }
+
+              expect(calls.size).to eq(1)
+            end
+          end
+
+          context 'when the target raises Errno::EPIPE' do
+            let(:target) do
+              proc do
+                calls << 1
+                raise Errno::EPIPE
+              end
+            end
+
+            it 'stops the loop' do
+              Timeout.timeout(1) { plugin.run! }
+
+              expect(calls.size).to eq(1)
+            end
+          end
+
+          context 'when the target raises other StandardError' do
+            let(:target) do
+              proc do
+                calls << 1
+                raise 'boom' if calls.size == 1
+
+                raise IOError, 'closed stream'
+              end
+            end
+
+            it 'logs the error without exiting puma and keeps the loop running' do
+              Timeout.timeout(1) { plugin.run! }
+
+              expect(log_writer).to have_received(:unknown_error)
+                .with(instance_of(RuntimeError), nil, 'plugin=telemetry')
+              expect(calls.size).to eq(2)
+            end
+          end
+
+          context 'when the plugin is stopped' do
+            let(:target) { proc { calls << 1 } }
+
+            it 'does not publish' do
+              plugin.stop!
+
+              Timeout.timeout(1) { plugin.run! }
+
+              expect(calls).to be_empty
+            end
+          end
+        end
+
+        describe '#start' do
+          let(:log_writer) { instance_double(Puma::LogWriter, log: nil) }
+          let(:events) { instance_double(Puma::Events) }
+          let(:launcher) { instance_double(Puma::Launcher, log_writer: log_writer, events: events) }
+
+          let(:config) do
+            Telemetry::Config.new.tap do |c|
+              c.enabled = true
+              c.initial_delay = 0
+            end
+          end
+
+          let(:hooks) { [] }
+
+          before do
+            allow(described_class).to receive(:config).and_return(config)
+            allow(events).to receive(:on_stopped) { |&block| hooks << block }
+            allow(plugin).to receive(:in_background)
+          end
+
+          it 'registers an on_stopped hook' do
+            plugin.start(launcher)
+
+            expect(hooks.size).to eq(1)
+          end
+
+          it 'stops the runner when the hook fires' do
+            plugin.start(launcher)
+
+            hooks.each(&:call)
+
+            expect(plugin).to be_stopped
+          end
+
+          context 'when disabled' do
+            before { config.enabled = false }
+
+            it 'does not register an on_stopped hook' do
+              plugin.start(launcher)
+
+              expect(hooks).to be_empty
+            end
           end
         end
 
