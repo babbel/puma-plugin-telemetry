@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'socket'
+
 module Puma
   class Plugin
     module Telemetry
@@ -97,6 +99,7 @@ module Puma
           if defined?(Socket::SOL_TCP) && defined?(Socket::TCP_INFO)
             @socket_telemetry = true
           else
+            @socket_telemetry = false
             warn("Cannot capture socket telemetry on this platform (#{RUBY_PLATFORM}); socket_telemetry is disabled.")
           end
         end
