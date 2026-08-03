@@ -52,7 +52,7 @@ module Puma
             end
           end
 
-          let(:launcher) { instance_double(Puma::Launcher, log_writer: log_writer) }
+          let(:launcher) { instance_double(Puma::Launcher, log_writer: log_writer, events: log_writer) }
 
           let(:config) do
             Telemetry::Config.new.tap do |c|
