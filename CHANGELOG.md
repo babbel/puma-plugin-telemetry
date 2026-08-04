@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - A custom `formatter:` on the IO target now receives the transformed telemetry. Pass `transform: :passthrough` to get the same telemetry as before (#25)
 
+### Dropped
+- The `Targets::IOTarget::JSONFormatter` constant. Its behavior moved to `Formatters::JSONFormatter` and `Transforms::CloudWatchTransform` (#25)
+
 ### Fixed
 - Stop the telemetry runner when puma shuts down or when the target IO stream is closed. This prevents `IOError: closed stream` errors during shutdown (#31, #45)
 - Log target errors with `unknown_error` instead of `error`, so a failed publish does not make puma exit (#31, #45)

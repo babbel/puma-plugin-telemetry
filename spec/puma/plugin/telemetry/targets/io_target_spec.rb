@@ -15,6 +15,16 @@ module Puma
 
             expect(io.string).to include('foo=bar')
           end
+
+          context 'with passthrough formatter and transform' do
+            subject(:target) { described_class.new(io: io, formatter: :passthrough, transform: :passthrough) }
+
+            it 'puts the telemetry unaltered' do
+              target.call(telemetry)
+
+              expect(io.string).to eq("#{telemetry}\n")
+            end
+          end
         end
       end
     end
