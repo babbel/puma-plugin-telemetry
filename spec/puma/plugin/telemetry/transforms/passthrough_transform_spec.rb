@@ -7,11 +7,11 @@ module Puma
         RSpec.describe PassthroughTransform do
           subject(:transform) { described_class }
 
-          it 'returns the telemetry, unalterted' do
-            telmetry_data = { 'foo' => 'bar' }
-            transformed_data = transform.call(telmetry_data)
+          it 'returns the telemetry, unaltered' do
+            telemetry_data = { 'foo' => 'bar' }
+            transformed_data = transform.call(telemetry_data)
 
-            expect(transformed_data).to eq(telmetry_data)
+            expect(transformed_data).to eq(telemetry_data)
           end
         end
       end

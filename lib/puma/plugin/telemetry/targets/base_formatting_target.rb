@@ -13,7 +13,7 @@ module Puma
         class BaseFormattingTarget
           def initialize(formatter: :json, transform: :cloud_watch)
             @transform = case transform
-                         when :cloud_watch then Transforms::CloudWatchTranform
+                         when :cloud_watch then Transforms::CloudWatchTransform
                          when :passthrough then Transforms::PassthroughTransform
                          else transform
                          end
@@ -25,7 +25,7 @@ module Puma
           end
 
           def call(_telemetry)
-            raise "#{__method__} must be implemented by #{self.class.name}"
+            raise NotImplementedError, "#{__method__} must be implemented by #{self.class.name}"
           end
 
           private

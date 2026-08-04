@@ -7,11 +7,11 @@ module Puma
         RSpec.describe PassthroughFormatter do
           subject(:formatter) { described_class }
 
-          it 'returns the telemetry, unalterted' do
-            telmetry_data = { 'foo' => 'bar' }
-            formatted_data = formatter.call(telmetry_data)
+          it 'returns the telemetry, unaltered' do
+            telemetry_data = { 'foo' => 'bar' }
+            formatted_data = formatter.call(telemetry_data)
 
-            expect(formatted_data).to eq(telmetry_data)
+            expect(formatted_data).to eq(telemetry_data)
           end
         end
       end

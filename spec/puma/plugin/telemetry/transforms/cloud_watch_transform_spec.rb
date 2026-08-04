@@ -4,7 +4,7 @@ module Puma
   class Plugin
     module Telemetry
       module Transforms
-        RSpec.describe CloudWatchTranform do
+        RSpec.describe CloudWatchTransform do
           subject(:transform) { described_class }
 
           it 'replaces dots with dashes in keys' do
