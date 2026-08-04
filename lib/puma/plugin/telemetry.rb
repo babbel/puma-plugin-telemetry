@@ -64,6 +64,7 @@ module Puma
       module PluginInstanceMethods
         def start(launcher)
           @launcher = launcher
+          @stopped = false
 
           unless Puma::Plugin::Telemetry.config.enabled?
             log_writer.log 'plugin=telemetry msg="disabled, exiting..."'
@@ -72,24 +73,25 @@ module Puma
 
           log_writer.log 'plugin=telemetry msg="enabled, setting up runner..."'
 
-          in_background do
-            sleep Puma::Plugin::Telemetry.config.initial_delay
-            run!
-          end
+          setup_runner
         end
 
         def run!
           loop do
-            log_writer.debug 'plugin=telemetry msg="publish"'
+            break if stopped?
 
-            call(Puma::Plugin::Telemetry.build(@launcher))
-          rescue Errno::EPIPE
-            # Occurs when trying to output to STDOUT while puma is shutting down
-          rescue StandardError => e
-            log_writer.error "plugin=telemetry err=#{e.class} msg=#{e.message.inspect}"
-          ensure
+            break unless try_publish
+
             sleep Puma::Plugin::Telemetry.config.frequency
           end
+        end
+
+        def stop!
+          @stopped = true
+        end
+
+        def stopped?
+          !!@stopped
         end
 
         def call(telemetry)
@@ -99,6 +101,39 @@ module Puma
         end
 
         private
+
+        def setup_runner
+          @launcher.events.on_stopped { stop! }
+
+          in_background do
+            sleep Puma::Plugin::Telemetry.config.initial_delay
+            run!
+          end
+        end
+
+        def try_publish
+          publish
+          true
+        rescue IOError, Errno::EPIPE
+          # Puma closes the IO streams during shutdown, stop publishing
+          log_safely 'plugin=telemetry msg="IO stream closed, stopping the runner"'
+          false
+        rescue StandardError => e
+          log_writer.unknown_error(e, nil, 'plugin=telemetry')
+          true
+        end
+
+        def publish
+          log_writer.debug 'plugin=telemetry msg="publish"'
+
+          call(Puma::Plugin::Telemetry.build(@launcher))
+        end
+
+        def log_safely(message)
+          log_writer.log(message)
+        rescue IOError, Errno::EPIPE
+          nil
+        end
 
         def log_writer
           if Puma::Const::PUMA_VERSION.to_i < 6
