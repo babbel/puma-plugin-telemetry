@@ -10,10 +10,10 @@ module Puma
         #
         #     require 'opentelemetry-metrics-sdk'
         #
-        #     OpenTelemetryTarget.new(meter_provider: OpenTelemetry.meter_provider, prefix: 'puma')
+        #     OpenTelemetryTarget.new(meter_provider: OpenTelemetry.meter_provider)
         #
         class OpenTelemetryTarget
-          def initialize(meter_provider:, prefix: nil, suffix: nil, force_flush: false, attributes: {})
+          def initialize(meter_provider:, prefix: 'puma', suffix: nil, force_flush: false, attributes: {})
             @meter_provider = meter_provider
             @meter          = meter_provider.meter('puma.telemetry')
             @prefix         = prefix

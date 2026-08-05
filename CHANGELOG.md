@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- New `:open_telemetry` target. Requires the `opentelemetry-metrics-sdk` gem in the consumer project (#30)
+- New `:open_telemetry` target. Metric names get the `puma` prefix by default. Requires the `opentelemetry-metrics-sdk` gem in the consumer project (#30)
 - New `formatter:` options for the IO target: `:json` and `:passthrough` (#25)
 - New `transform:` options for the IO target: `:cloud_watch` and `:passthrough` (#25)
 

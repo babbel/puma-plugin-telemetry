@@ -97,7 +97,7 @@ This target supports the following options:
 | Option         | Description                                                                                                                            | Default | Required |
 |----------------|----------------------------------------------------------------------------------------------------------------------------------------|---------|----------|
 | meter_provider | The meter provider used to create instruments, e.g. `OpenTelemetry.meter_provider`                                                      | -       | Yes      |
-| prefix         | Metric name prefix. <br> ex) prefix: 'puma' => 'puma.workers.booted'                                                                     | nil     | No       |
+| prefix         | Metric name prefix. <br> ex) prefix: 'web' => 'web.workers.booted'. Pass `nil` for no prefix                                             | 'puma'  | No       |
 | suffix         | Metric name suffix. <br> ex) suffix: 'v1' => 'workers.booted.v1'                                                                         | nil     | No       |
 | attributes     | Attributes to be included with the metric                                                                                                | {}      | No       |
 | force_flush    | Force flush the meter provider after each publish, so all values are exported, not only the last aggregated one. Can impact performance | false   | No       |
