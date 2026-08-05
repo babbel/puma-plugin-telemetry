@@ -14,6 +14,24 @@ GEM
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
     nio4r (2.7.5)
+    opentelemetry-api (1.4.0)
+    opentelemetry-common (0.21.0)
+      opentelemetry-api (~> 1.0)
+    opentelemetry-metrics-api (0.2.0)
+      opentelemetry-api (~> 1.0)
+    opentelemetry-metrics-sdk (0.5.0)
+      opentelemetry-api (~> 1.1)
+      opentelemetry-metrics-api (~> 0.2)
+      opentelemetry-sdk (~> 1.2)
+    opentelemetry-registry (0.3.1)
+      opentelemetry-api (~> 1.1)
+    opentelemetry-sdk (1.7.0)
+      opentelemetry-api (~> 1.1)
+      opentelemetry-common (~> 0.20)
+      opentelemetry-registry (~> 0.2)
+      opentelemetry-semantic_conventions
+    opentelemetry-semantic_conventions (1.10.1)
+      opentelemetry-api (~> 1.0)
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
@@ -69,6 +87,13 @@ PLATFORMS
 
 DEPENDENCIES
   dogstatsd-ruby
+  opentelemetry-api (~> 1.4.0)
+  opentelemetry-common (~> 0.21.0)
+  opentelemetry-metrics-api (~> 0.2.0)
+  opentelemetry-metrics-sdk (~> 0.5.0)
+  opentelemetry-registry (~> 0.3.1)
+  opentelemetry-sdk (~> 1.7.0)
+  opentelemetry-semantic_conventions (~> 1.10.0)
   puma-plugin-telemetry!
   rack
   rake (~> 13.2)

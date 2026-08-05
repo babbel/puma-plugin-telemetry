@@ -66,13 +66,41 @@ The `transform:` options are
 
 A target for the Datadog StatsD client, that uses batch operation to publish metrics.
 
-**NOTE** Be sure to have the `dogstatsd` gem installed.
+**NOTE** This target requires the `dogstatsd-ruby` gem in your project:
+
+```ruby
+gem "dogstatsd-ruby"
+```
 
 ```ruby
 config.add_target :dogstatsd, client: Datadog::Statsd.new
 ```
 
 You can provide all the tags, namespaces, and other configuration options as always to `Datadog::Statsd.new` method.
+
+### OpenTelemetry target
+
+A target for the OpenTelemetry Metrics SDK, that uses batch operations to publish metrics.
+
+**NOTE** This target requires the `opentelemetry-metrics-sdk` gem in your project:
+
+```ruby
+gem "opentelemetry-metrics-sdk"
+```
+
+```ruby
+config.add_target :open_telemetry, meter_provider: OpenTelemetry.meter_provider
+```
+
+This target supports the following options:
+
+| Option         | Description                                                                                                                            | Default | Required |
+|----------------|----------------------------------------------------------------------------------------------------------------------------------------|---------|----------|
+| meter_provider | The meter provider used to create instruments, e.g. `OpenTelemetry.meter_provider`                                                      | -       | Yes      |
+| prefix         | Metric name prefix. <br> ex) prefix: 'web' => 'web.workers.booted'. Pass `nil` for no prefix                                             | 'puma'  | No       |
+| suffix         | Metric name suffix. <br> ex) suffix: 'v1' => 'workers.booted.v1'                                                                         | nil     | No       |
+| attributes     | Attributes to be included with the metric                                                                                                | {}      | No       |
+| force_flush    | Force flush the meter provider after each publish, so all values are exported, not only the last aggregated one. Can impact performance | false   | No       |
 
 ### All available options
 
