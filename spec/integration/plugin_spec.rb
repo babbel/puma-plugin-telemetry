@@ -105,26 +105,29 @@ module Puma
             'workers.max_threads' => 1,
             'workers.requests_count' => 0,
             'queue.backlog' => 0,
-            'queue.capacity' => 1,
+            'queue.capacity' => 1
           }
         end
 
+        def next_line_including(pattern)
+          while (line = @server.next_line)
+            return line if line.include?(pattern)
+          end
+        end
+
         it "doesn't crash" do
-          total_metrics = 0
           matched_telemetry = {}
 
-          while (line = @server.next_line) do
-            if line.include?('OpenTelemetry::SDK::Metrics::State::MetricData')
-              name = @server.next_line.match(/name="(.*)"/)[1]
+          until matched_telemetry.size == expected_telemetry.size
+            break unless next_line_including('OpenTelemetry::SDK::Metrics::State::MetricData')
 
-              true until (line = @server.next_line).include?('value=')
-              value = line.match(/value=(.*)/)[1].to_i
+            name = @server.next_line&.slice(/name="(.*)"/, 1)
+            value = next_line_including('value=')&.slice(/value=(.*)/, 1)
+            break if name.nil? || value.nil?
 
-              matched_telemetry[name] = value
-
-              break if matched_telemetry.keys.size == expected_telemetry.keys.size
-            end
+            matched_telemetry[name] = value.to_i
           end
+
           expect(matched_telemetry).to eq(expected_telemetry)
         end
       end

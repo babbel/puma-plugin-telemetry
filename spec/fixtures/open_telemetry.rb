@@ -3,9 +3,10 @@
 require 'opentelemetry/sdk'
 require 'opentelemetry-metrics-sdk'
 
-# Custom console exporter to support flushing metrics. Console _pull_ exporter doesn't have a force_flush method like the typical exporters
+# Console exporter that supports flushing metrics. The console _pull_
+# exporter has no force_flush method like the typical exporters.
 class ConsoleMetricExporter < OpenTelemetry::SDK::Metrics::Export::ConsoleMetricPullExporter
-  def force_flush(timeout: nil)
+  def force_flush(timeout: nil) # rubocop:disable Lint/UnusedMethodArgument
     pull
   end
 end
@@ -25,7 +26,7 @@ bind "unix://#{ENV.fetch('BIND_PATH', nil)}"
 plugin 'telemetry'
 
 Puma::Plugin::Telemetry.configure do |config|
-  config.add_target :open_telemetry, meter_provider: OpenTelemetry.meter_provider
+  config.add_target :open_telemetry, meter_provider: OpenTelemetry.meter_provider, force_flush: true
   config.frequency = 0.2
   config.enabled = true
   config.initial_delay = 2
