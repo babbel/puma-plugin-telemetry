@@ -18,6 +18,41 @@ module Puma
           end
         end
 
+        describe '#socket_telemetry!' do
+          context 'when TCP_INFO is available' do
+            before do
+              stub_const('Socket::SOL_TCP', 6)
+              stub_const('Socket::TCP_INFO', 11)
+            end
+
+            it 'enables socket telemetry' do
+              config.socket_telemetry!
+
+              expect(config.socket_telemetry?).to eq true
+            end
+          end
+
+          context 'when TCP_INFO is not available' do
+            before { hide_const('Socket::TCP_INFO') }
+
+            it 'warns and keeps socket telemetry disabled' do
+              expect { config.socket_telemetry! }
+                .to output(/socket_telemetry is disabled/).to_stderr
+
+              expect(config.socket_telemetry?).to eq false
+            end
+
+            it 'disables socket telemetry when previously enabled' do
+              config.socket_telemetry = true
+
+              expect { config.socket_telemetry! }
+                .to output(/socket_telemetry is disabled/).to_stderr
+
+              expect(config.socket_telemetry?).to eq false
+            end
+          end
+        end
+
         describe '#add_target' do
           context 'when built in: IO' do
             it 'adds new target' do

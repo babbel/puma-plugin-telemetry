@@ -5,14 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] TBD
+## [Unreleased]
 
 ### Added
-- Introduce new `:open_telemetry` target
+- New `:open_telemetry` target. Requires the `opentelemetry-metrics-sdk` gem in the consumer project (#30)
+- New `formatter:` options for the IO target: `:json` and `:passthrough` (#25)
+- New `transform:` options for the IO target: `:cloud_watch` and `:passthrough` (#25)
 
 ### Changed
-- Removed dependency for `dogstatsd-ruby` gem. Added `dogstatsd-ruby` and `opentelemetry-*` gems to development/test dependencies for integration tests.
-  - Consumers are expected to explicitly define these dependencies in their projects.
+- A custom `formatter:` on the IO target now receives the transformed telemetry. Pass `transform: :passthrough` to get the same telemetry as before (#25)
+
+### Dropped
+- The `Targets::IOTarget::JSONFormatter` constant. Its behavior moved to `Formatters::JSONFormatter` and `Transforms::CloudWatchTransform` (#25)
+
+### Fixed
+- Stop the telemetry runner when puma shuts down or when the target IO stream is closed. This prevents `IOError: closed stream` errors during shutdown (#31, #45)
+- Log target errors with `unknown_error` instead of `error`, so a failed publish does not make puma exit (#31, #45)
+
+## [1.1.6]
+
+### Changed
+- Allow puma 8 (#42)
+
+## [1.1.5]
+
+### Changed
+- Allow puma 7 (#40)
+- Updated gems in the lockfile
+
+### Added
+- Check for support for 'ubuntu-24.04'
+- Check for support for Ruby 3.4
+
+### Dropped
+- Check for support for 'ubuntu-20.04'
+- Check for support for Ruby 2.6 and 2.7
+
 
 ## [1.1.4]
 

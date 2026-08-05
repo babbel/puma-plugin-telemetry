@@ -37,7 +37,10 @@ class RequestQueueTimeMiddleware
   # see also: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-request-tracing.html
   def queue_start(env)
     value = env['HTTP_X_AMZN_TRACE_ID']
+    # TODO: rewrite this line to please Rubocop
+    # rubocop:disable Style/SafeNavigationChainLength
     value&.split('Root=')&.last&.split('-')&.fetch(1)&.to_i(16)
+    # rubocop:enable Style/SafeNavigationChainLength
   end
 
   def request_start
