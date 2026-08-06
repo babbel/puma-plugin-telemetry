@@ -17,6 +17,11 @@ module Puma
           # Current number of threads spawned.
           'workers.spawned_threads',
 
+          # Current number of threads busy serving requests. Requires
+          # puma 6.6 or newer, it is dropped from the defaults below
+          # on older versions.
+          'workers.busy_threads',
+
           # Maximum number of threads that can run .
           'workers.max_threads',
 
@@ -31,6 +36,11 @@ module Puma
           # could mean that load balancing is not performing well.
           'queue.capacity'
         ].freeze
+
+        BUSY_THREADS_TELEMETRY = 'workers.busy_threads'
+
+        # Puma exposes the `busy_threads` stat from this version onwards.
+        BUSY_THREADS_MIN_PUMA_VERSION = Gem::Version.new('6.6')
 
         TARGETS = {
           dogstatsd: Telemetry::Targets::DatadogStatsdTarget,
@@ -59,7 +69,7 @@ module Puma
         # Which metrics to publish from puma stats. You can select
         # a subset from default ones that interest you the most.
         # - default: DEFAULT_PUMA_TELEMETRY
-        attr_accessor :puma_telemetry
+        attr_reader :puma_telemetry
 
         # Whenever to publish socket telemetry.
         # - default: false
@@ -84,9 +94,24 @@ module Puma
           @initial_delay = 5
           @frequency = 5
           @targets = []
-          @puma_telemetry = DEFAULT_PUMA_TELEMETRY
+          @puma_telemetry = default_puma_telemetry
           @socket_telemetry = false
           @socket_parser = :unpack
+        end
+
+        def puma_telemetry=(telemetry)
+          if telemetry.include?(BUSY_THREADS_TELEMETRY) && !self.class.busy_threads_supported?
+            raise Telemetry::Error,
+                  "#{BUSY_THREADS_TELEMETRY} requires puma >= #{BUSY_THREADS_MIN_PUMA_VERSION}, " \
+                  "but puma #{::Puma::Const::PUMA_VERSION} is installed. Upgrade puma, or drop " \
+                  "#{BUSY_THREADS_TELEMETRY} from `config.puma_telemetry`."
+          end
+
+          @puma_telemetry = telemetry
+        end
+
+        def self.busy_threads_supported?
+          Gem::Version.new(::Puma::Const::PUMA_VERSION) >= BUSY_THREADS_MIN_PUMA_VERSION
         end
 
         def enabled?
@@ -117,6 +142,17 @@ module Puma
           end
 
           @targets.push(target.new(**args))
+        end
+
+        private
+
+        # `workers.busy_threads` is only a default when the installed
+        # puma can actually report it. Selecting it explicitly on an
+        # older puma raises instead, see `#puma_telemetry=`.
+        def default_puma_telemetry
+          return DEFAULT_PUMA_TELEMETRY if self.class.busy_threads_supported?
+
+          DEFAULT_PUMA_TELEMETRY - [BUSY_THREADS_TELEMETRY]
         end
       end
     end

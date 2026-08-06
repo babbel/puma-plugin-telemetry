@@ -111,13 +111,15 @@ Puma::Plugin::Telemetry.configure do |config|
   config.enabled = true
   config.initial_delay = 10
   config.frequency = 30
-  config.puma_telemetry = %w[workers.requests_count queue.backlog queue.capacity]
+  config.puma_telemetry = %w[workers.requests_count workers.busy_threads queue.backlog queue.capacity]
   config.socket_telemetry!
   config.socket_parser = :inspect
   config.add_target :io, io: StringIO.new, formatter: :json, transform: :passthrough
   config.add_target :dogstatsd, client: Datadog::Statsd.new(tags: { env: ENV["RAILS_ENV"] })
 end
 ```
+
+`workers.busy_threads` is backed by puma's `busy_threads` stat, which puma only reports from 6.6 onwards. It is part of the default telemetry on those versions and left out on older ones; selecting it explicitly on an older puma raises a `Puma::Plugin::Telemetry::Error`.
 
 ### Custom Targets
 

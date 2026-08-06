@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New `workers.busy_threads` telemetry, reporting puma's `busy_threads` stat. Puma exposes this stat from 6.6 onwards, so it is only a default on those versions. Selecting it explicitly on an older puma raises with an explanation instead of silently reporting `0`
+
 ## [1.2.0]
 
 ### Added

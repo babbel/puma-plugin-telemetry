@@ -18,6 +18,45 @@ module Puma
           end
         end
 
+        describe '#puma_telemetry' do
+          context 'when puma reports busy threads' do
+            before { stub_const('::Puma::Const::PUMA_VERSION', '6.6.0') }
+
+            it 'includes workers.busy_threads by default' do
+              expect(config.puma_telemetry).to include('workers.busy_threads')
+            end
+
+            it 'accepts workers.busy_threads' do
+              config.puma_telemetry = ['workers.busy_threads']
+
+              expect(config.puma_telemetry).to eq ['workers.busy_threads']
+            end
+          end
+
+          context 'when puma is too old to report busy threads' do
+            before { stub_const('::Puma::Const::PUMA_VERSION', '6.5.0') }
+
+            it 'drops workers.busy_threads from the defaults' do
+              expect(config.puma_telemetry).not_to include('workers.busy_threads')
+            end
+
+            it 'keeps the remaining default telemetry' do
+              expect(config.puma_telemetry).to eq(described_class::DEFAULT_PUMA_TELEMETRY - ['workers.busy_threads'])
+            end
+
+            it 'raises when workers.busy_threads is selected explicitly' do
+              expect { config.puma_telemetry = ['workers.busy_threads'] }
+                .to raise_error(Telemetry::Error, /requires puma >= 6\.6, but puma 6\.5\.0 is installed/)
+            end
+
+            it 'allows selecting other telemetry' do
+              config.puma_telemetry = ['queue.backlog']
+
+              expect(config.puma_telemetry).to eq ['queue.backlog']
+            end
+          end
+        end
+
         describe '#socket_telemetry!' do
           context 'when TCP_INFO is available' do
             before do

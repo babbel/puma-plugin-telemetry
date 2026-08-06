@@ -9,6 +9,7 @@ module Puma
           'workers.booted' => :workers_booted,
           'workers.total' => :workers_total,
           'workers.spawned_threads' => :workers_spawned_threads,
+          'workers.busy_threads' => :workers_busy_threads,
           'workers.max_threads' => :workers_max_threads,
           'workers.requests_count' => :workers_requests_count,
           'queue.backlog' => :queue_backlog,
@@ -52,6 +53,10 @@ module Puma
           @stats.fetch(:running, 0)
         end
 
+        def workers_busy_threads
+          @stats.fetch(:busy_threads, 0)
+        end
+
         def queue_backlog
           @stats.fetch(:backlog, 0)
         end
@@ -77,6 +82,10 @@ module Puma
 
         def workers_spawned_threads
           sum_stat(:running)
+        end
+
+        def workers_busy_threads
+          sum_stat(:busy_threads)
         end
 
         def queue_backlog
