@@ -45,18 +45,26 @@ module Puma
           }
         end
 
+        # `workers.busy_threads` depends on what the server happens to be
+        # doing when telemetry is published, so only assert that it is there.
+        def expect_telemetry_line(line, target)
+          expect(line).to start_with "target=#{target} telemetry={"
+          expect(line).to match(/"workers\.busy_threads"\s*=>\s*\d+/)
+          expect(line).to include(*expected_telemetry.map { |metric, value| "#{metric.inspect}=>#{value.inspect}" })
+        end
+
         it 'runs telemetry' do
           expect(@server.lines).to include(/plugin=telemetry msg="enabled, setting up runner\.\.\."/)
         end
 
         it 'executes the first target' do
           true until (line = @server.next_line).include?('target=01')
-          expect(line).to start_with "target=01 telemetry=#{expected_telemetry.inspect}"
+          expect_telemetry_line(line, '01')
         end
 
         it 'executes the second target' do
           true until (line = @server.next_line).include?('target=02')
-          expect(line).to start_with "target=02 telemetry=#{expected_telemetry.inspect}"
+          expect_telemetry_line(line, '02')
         end
       end
 
@@ -89,9 +97,10 @@ module Puma
         it "doesn't crash" do
           true until (line = @server.next_line).include?('DEBUG -- : Statsd')
 
-          lines = ([line.slice(/workers.*/)] + Array.new(6) { @server.next_line.strip })
+          lines = ([line.slice(/workers.*/)] + Array.new(7) { @server.next_line.strip })
 
-          expect(lines).to eq(expected_telemetry)
+          expect(lines).to include(*expected_telemetry)
+          expect(lines.grep(/\Aworkers\.busy_threads:\d+\|g\z/).size).to eq(1)
         end
       end
 
@@ -118,7 +127,10 @@ module Puma
         it "doesn't crash" do
           matched_telemetry = {}
 
-          until matched_telemetry.size == expected_telemetry.size
+          # One more than `expected_telemetry`, for `puma.workers.busy_threads`,
+          # whose value depends on what the server is doing when telemetry is
+          # published and so is only checked for presence.
+          until matched_telemetry.size == expected_telemetry.size + 1
             break unless next_line_including('OpenTelemetry::SDK::Metrics::State::MetricData')
 
             name = @server.next_line&.slice(/name="(.*)"/, 1)
@@ -128,7 +140,8 @@ module Puma
             matched_telemetry[name] = value.to_i
           end
 
-          expect(matched_telemetry).to eq(expected_telemetry)
+          expect(matched_telemetry).to include(expected_telemetry)
+          expect(matched_telemetry).to include('puma.workers.busy_threads')
         end
       end
 

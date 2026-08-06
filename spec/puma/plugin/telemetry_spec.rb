@@ -18,20 +18,33 @@ module Puma
       end
 
       describe '.build' do
+        let(:puma_stats) do
+          {
+            booted_workers: 2,
+            max_threads: 4,
+            requests_count: 5,
+            running: 6,
+            busy_threads: 7,
+            backlog: 8,
+            pool_capacity: 9
+          }
+        end
+
         let(:default_telemetry) do
           {
-            'workers.booted' => 1,
+            'workers.booted' => 2,
             'workers.total' => 1,
-            'workers.max_threads' => 0,
-            'workers.requests_count' => 0,
-            'workers.spawned_threads' => 0,
-            'queue.backlog' => 0,
-            'queue.capacity' => 0
+            'workers.spawned_threads' => 6,
+            'workers.busy_threads' => 7,
+            'workers.max_threads' => 4,
+            'workers.requests_count' => 5,
+            'queue.backlog' => 8,
+            'queue.capacity' => 9
           }
         end
 
         it 'returns default telemetry hash' do
-          allow(::Puma).to receive(:stats_hash).and_return({})
+          allow(::Puma).to receive(:stats_hash).and_return(puma_stats)
           expect(described_class.build).to eq(default_telemetry)
         end
       end
