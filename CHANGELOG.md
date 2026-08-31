@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New `LogTarget` for logging metrics to any `::Logger` compatible logger
+- New `formatter:` option `:logfmt`.
+
 ## [1.2.0]
 
 ### Added
@@ -42,7 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Dropped
 - Check for support for 'ubuntu-20.04'
 - Check for support for Ruby 2.6 and 2.7
-
 
 ## [1.1.4]
 
